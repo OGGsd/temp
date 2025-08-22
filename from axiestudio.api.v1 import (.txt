@@ -1,0 +1,520 @@
+    from axiestudio.api.v1 import (
+
+  File "/app/.venv/lib/python3.12/site-packages/axiestudio/api/v1/__init__.py", line 4, in <module>
+
+    from axiestudio.api.v1.email_verification import router as email_verification_router
+
+  File "/app/.venv/lib/python3.12/site-packages/axiestudio/api/v1/email_verification.py", line 41
+
+    email: str
+
+IndentationError: unexpected indent
+
+2025-08-22 20:34:18.149 | DEBUG    | axiestudio.services.settings.base:set_database_url:361 - No database_url provided, trying AXIESTUDIO_DATABASE_URL env variable
+
+2025-08-22 20:34:18.150 | DEBUG    | axiestudio.services.settings.base:set_database_url:364 - Using AXIESTUDIO_DATABASE_URL env variable.
+
+2025-08-22 20:34:18.150 | DEBUG    | axiestudio.services.settings.base:set_components_path:460 - Setting default components path to components_path
+
+2025-08-22 20:34:18.150 | DEBUG    | axiestudio.services.settings.base:set_components_path:468 - Components path: ['/app/.venv/lib/python3.12/site-packages/axiestudio/components']
+
+2025-08-22 20:34:18.150 | DEBUG    | axiestudio.services.settings.base:set_user_agent:313 - Setting user agent to axiestudio
+
+Traceback (most recent call last):
+
+  File "/app/.venv/bin/axiestudio", line 10, in <module>
+
+    sys.exit(main())
+
+             ^^^^^^
+
+  File "/app/.venv/lib/python3.12/site-packages/axiestudio/axiestudio_launcher.py", line 18, in main
+
+    from axiestudio.__main__ import main as axiestudio_main
+
+  File "/app/.venv/lib/python3.12/site-packages/axiestudio/__main__.py", line 31, in <module>
+
+    from axiestudio.main import setup_app
+
+  File "/app/.venv/lib/python3.12/site-packages/axiestudio/main.py", line 26, in <module>
+
+    from axiestudio.api import health_check_router, log_router, router
+
+  File "/app/.venv/lib/python3.12/site-packages/axiestudio/api/__init__.py", line 3, in <module>
+
+    from axiestudio.api.router import router
+
+  File "/app/.venv/lib/python3.12/site-packages/axiestudio/api/router.py", line 4, in <module>
+
+    from axiestudio.api.v1 import (
+
+  File "/app/.venv/lib/python3.12/site-packages/axiestudio/api/v1/__init__.py", line 4, in <module>
+
+    from axiestudio.api.v1.email_verification import router as email_verification_router
+
+  File "/app/.venv/lib/python3.12/site-packages/axiestudio/api/v1/email_verification.py", line 41
+
+    email: str
+
+IndentationError: unexpected indent
+
+2025-08-22 20:34:24.919 | DEBUG    | axiestudio.services.settings.base:set_database_url:361 - No database_url provided, trying AXIESTUDIO_DATABASE_URL env variable
+
+2025-08-22 20:34:24.919 | DEBUG    | axiestudio.services.settings.base:set_database_url:364 - Using AXIESTUDIO_DATABASE_URL env variable.
+
+2025-08-22 20:34:24.919 | DEBUG    | axiestudio.services.settings.base:set_components_path:460 - Setting default components path to components_path
+
+2025-08-22 20:34:24.919 | DEBUG    | axiestudio.services.settings.base:set_components_path:468 - Components path: ['/app/.venv/lib/python3.12/site-packages/axiestudio/components']
+
+2025-08-22 20:34:24.920 | DEBUG    | axiestudio.services.settings.base:set_user_agent:313 - Setting user agent to axiestudio
+
+Traceback (most recent call last):
+
+  File "/app/.venv/bin/axiestudio", line 10, in <module>
+
+    sys.exit(main())
+
+             ^^^^^^
+
+  File "/app/.venv/lib/python3.12/site-packages/axiestudio/axiestudio_launcher.py", line 18, in main
+
+    from axiestudio.__main__ import main as axiestudio_main
+
+  File "/app/.venv/lib/python3.12/site-packages/axiestudio/__main__.py", line 31, in <module>
+
+    from axiestudio.main import setup_app
+
+  File "/app/.venv/lib/python3.12/site-packages/axiestudio/main.py", line 26, in <module>
+
+    from axiestudio.api import health_check_router, log_router, router
+
+  File "/app/.venv/lib/python3.12/site-packages/axiestudio/api/__init__.py", line 3, in <module>
+
+    from axiestudio.api.router import router
+
+  File "/app/.venv/lib/python3.12/site-packages/axiestudio/api/router.py", line 4, in <module>
+
+    from axiestudio.api.v1 import (
+
+  File "/app/.venv/lib/python3.12/site-packages/axiestudio/api/v1/__init__.py", line 4, in <module>
+
+    from axiestudio.api.v1.email_verification import router as email_verification_router
+
+  File "/app/.venv/lib/python3.12/site-packages/axiestudio/api/v1/email_verification.py", line 41
+
+    email: str
+
+IndentationError: unexpected indent
+
+2025-08-22 20:34:31.660 | DEBUG    | axiestudio.services.settings.base:set_database_url:361 - No database_url provided, trying AXIESTUDIO_DATABASE_URL env variable
+
+2025-08-22 20:34:31.660 | DEBUG    | axiestudio.services.settings.base:set_database_url:364 - Using AXIESTUDIO_DATABASE_URL env variable.
+
+2025-08-22 20:34:31.660 | DEBUG    | axiestudio.services.settings.base:set_components_path:460 - Setting default components path to components_path
+
+2025-08-22 20:34:31.660 | DEBUG    | axiestudio.services.settings.base:set_components_path:468 - Components path: ['/app/.venv/lib/python3.12/site-packages/axiestudio/components']
+
+2025-08-22 20:34:31.660 | DEBUG    | axiestudio.services.settings.base:set_user_agent:313 - Setting user agent to axiestudio
+
+Traceback (most recent call last):
+
+  File "/app/.venv/bin/axiestudio", line 10, in <module>
+
+    sys.exit(main())
+
+             ^^^^^^
+
+  File "/app/.venv/lib/python3.12/site-packages/axiestudio/axiestudio_launcher.py", line 18, in main
+
+    from axiestudio.__main__ import main as axiestudio_main
+
+  File "/app/.venv/lib/python3.12/site-packages/axiestudio/__main__.py", line 31, in <module>
+
+    from axiestudio.main import setup_app
+
+  File "/app/.venv/lib/python3.12/site-packages/axiestudio/main.py", line 26, in <module>
+
+    from axiestudio.api import health_check_router, log_router, router
+
+  File "/app/.venv/lib/python3.12/site-packages/axiestudio/api/__init__.py", line 3, in <module>
+
+    from axiestudio.api.router import router
+
+  File "/app/.venv/lib/python3.12/site-packages/axiestudio/api/router.py", line 4, in <module>
+
+    from axiestudio.api.v1 import (
+
+  File "/app/.venv/lib/python3.12/site-packages/axiestudio/api/v1/__init__.py", line 4, in <module>
+
+    from axiestudio.api.v1.email_verification import router as email_verification_router
+
+  File "/app/.venv/lib/python3.12/site-packages/axiestudio/api/v1/email_verification.py", line 41
+
+    email: str
+
+IndentationError: unexpected indent
+
+ File "/app/.venv/lib/python3.12/site-packages/axiestudio/axiestudio_launcher.py", line 18, in main
+
+    from axiestudio.__main__ import main as axiestudio_main
+
+  File "/app/.venv/lib/python3.12/site-packages/axiestudio/__main__.py", line 31, in <module>
+
+    from axiestudio.main import setup_app
+
+  File "/app/.venv/lib/python3.12/site-packages/axiestudio/main.py", line 26, in <module>
+
+    from axiestudio.api import health_check_router, log_router, router
+
+  File "/app/.venv/lib/python3.12/site-packages/axiestudio/api/__init__.py", line 3, in <module>
+
+    from axiestudio.api.router import router
+
+  File "/app/.venv/lib/python3.12/site-packages/axiestudio/api/router.py", line 4, in <module>
+
+    from axiestudio.api.v1 import (
+
+  File "/app/.venv/lib/python3.12/site-packages/axiestudio/api/v1/__init__.py", line 4, in <module>
+
+    from axiestudio.api.v1.email_verification import router as email_verification_router
+
+  File "/app/.venv/lib/python3.12/site-packages/axiestudio/api/v1/email_verification.py", line 41
+
+    email: str
+
+IndentationError: unexpected indent
+
+2025-08-22 20:34:38.069 | DEBUG    | axiestudio.services.settings.base:set_database_url:361 - No database_url provided, trying AXIESTUDIO_DATABASE_URL env variable
+
+2025-08-22 20:34:38.069 | DEBUG    | axiestudio.services.settings.base:set_database_url:364 - Using AXIESTUDIO_DATABASE_URL env variable.
+
+2025-08-22 20:34:38.069 | DEBUG    | axiestudio.services.settings.base:set_components_path:460 - Setting default components path to components_path
+
+2025-08-22 20:34:38.069 | DEBUG    | axiestudio.services.settings.base:set_components_path:468 - Components path: ['/app/.venv/lib/python3.12/site-packages/axiestudio/components']
+
+2025-08-22 20:34:38.069 | DEBUG    | axiestudio.services.settings.base:set_user_agent:313 - Setting user agent to axiestudio
+
+Traceback (most recent call last):
+
+  File "/app/.venv/bin/axiestudio", line 10, in <module>
+
+    sys.exit(main())
+
+             ^^^^^^
+
+  File "/app/.venv/lib/python3.12/site-packages/axiestudio/axiestudio_launcher.py", line 18, in main
+
+    from axiestudio.__main__ import main as axiestudio_main
+
+  File "/app/.venv/lib/python3.12/site-packages/axiestudio/__main__.py", line 31, in <module>
+
+    from axiestudio.main import setup_app
+
+  File "/app/.venv/lib/python3.12/site-packages/axiestudio/main.py", line 26, in <module>
+
+    from axiestudio.api import health_check_router, log_router, router
+
+  File "/app/.venv/lib/python3.12/site-packages/axiestudio/api/__init__.py", line 3, in <module>
+
+    from axiestudio.api.router import router
+
+  File "/app/.venv/lib/python3.12/site-packages/axiestudio/api/router.py", line 4, in <module>
+
+    from axiestudio.api.v1 import (
+
+  File "/app/.venv/lib/python3.12/site-packages/axiestudio/api/v1/__init__.py", line 4, in <module>
+
+    from axiestudio.api.v1.email_verification import router as email_verification_router
+
+  File "/app/.venv/lib/python3.12/site-packages/axiestudio/api/v1/email_verification.py", line 41
+
+    email: str
+
+IndentationError: unexpected indent
+
+2025-08-22 20:34:44.817 | DEBUG    | axiestudio.services.settings.base:set_database_url:361 - No database_url provided, trying AXIESTUDIO_DATABASE_URL env variable
+
+2025-08-22 20:34:44.817 | DEBUG    | axiestudio.services.settings.base:set_database_url:364 - Using AXIESTUDIO_DATABASE_URL env variable.
+
+2025-08-22 20:34:44.818 | DEBUG    | axiestudio.services.settings.base:set_components_path:460 - Setting default components path to components_path
+
+2025-08-22 20:34:44.818 | DEBUG    | axiestudio.services.settings.base:set_components_path:468 - Components path: ['/app/.venv/lib/python3.12/site-packages/axiestudio/components']
+
+2025-08-22 20:34:44.818 | DEBUG    | axiestudio.services.settings.base:set_user_agent:313 - Setting user agent to axiestudio
+
+Traceback (most recent call last):
+
+  File "/app/.venv/bin/axiestudio", line 10, in <module>
+
+    sys.exit(main())
+
+             ^^^^^^
+
+  File "/app/.venv/lib/python3.12/site-packages/axiestudio/axiestudio_launcher.py", line 18, in main
+
+    from axiestudio.__main__ import main as axiestudio_main
+
+  File "/app/.venv/lib/python3.12/site-packages/axiestudio/__main__.py", line 31, in <module>
+
+    from axiestudio.main import setup_app
+
+  File "/app/.venv/lib/python3.12/site-packages/axiestudio/main.py", line 26, in <module>
+
+    from axiestudio.api import health_check_router, log_router, router
+
+  File "/app/.venv/lib/python3.12/site-packages/axiestudio/api/__init__.py", line 3, in <module>
+
+    from axiestudio.api.router import router
+
+  File "/app/.venv/lib/python3.12/site-packages/axiestudio/api/router.py", line 4, in <module>
+
+    from axiestudio.api.v1 import (
+
+  File "/app/.venv/lib/python3.12/site-packages/axiestudio/api/v1/__init__.py", line 4, in <module>
+
+    from axiestudio.api.v1.email_verification import router as email_verification_router
+
+  File "/app/.venv/lib/python3.12/site-packages/axiestudio/api/v1/email_verification.py", line 41
+
+    email: str
+
+IndentationError: unexpected indent
+
+2025-08-22 20:34:51.427 | DEBUG    | axiestudio.services.settings.base:set_database_url:361 - No database_url provided, trying AXIESTUDIO_DATABASE_URL env variable
+
+2025-08-22 20:34:51.427 | DEBUG    | axiestudio.services.settings.base:set_database_url:364 - Using AXIESTUDIO_DATABASE_URL env variable.
+
+2025-08-22 20:34:51.427 | DEBUG    | axiestudio.services.settings.base:set_components_path:460 - Setting default components path to components_path
+
+2025-08-22 20:34:51.427 | DEBUG    | axiestudio.services.settings.base:set_components_path:468 - Components path: ['/app/.venv/lib/python3.12/site-packages/axiestudio/components']
+
+2025-08-22 20:34:51.427 | DEBUG    | axiestudio.services.settings.base:set_user_agent:313 - Setting user agent to axiestudio
+
+Traceback (most recent call last):
+
+  File "/app/.venv/bin/axiestudio", line 10, in <module>
+
+    sys.exit(main())
+
+             ^^^^^^
+
+  File "/app/.venv/lib/python3.12/site-packages/axiestudio/axiestudio_launcher.py", line 18, in main
+
+    from axiestudio.__main__ import main as axiestudio_main
+
+  File "/app/.venv/lib/python3.12/site-packages/axiestudio/__main__.py", line 31, in <module>
+
+    from axiestudio.main import setup_app
+
+  File "/app/.venv/lib/python3.12/site-packages/axiestudio/main.py", line 26, in <module>
+
+    from axiestudio.api import health_check_router, log_router, router
+
+  File "/app/.venv/lib/python3.12/site-packages/axiestudio/api/__init__.py", line 3, in <module>
+
+    from axiestudio.api.router import router
+
+  File "/app/.venv/lib/python3.12/site-packages/axiestudio/api/router.py", line 4, in <module>
+
+    from axiestudio.api.v1 import (
+
+  File "/app/.venv/lib/python3.12/site-packages/axiestudio/api/v1/__init__.py", line 4, in <module>
+
+    from axiestudio.api.v1.email_verification import router as email_verification_router
+
+  File "/app/.venv/lib/python3.12/site-packages/axiestudio/api/v1/email_verification.py", line 41
+
+    email: str
+
+IndentationError: unexpected indent
+
+2025-08-22 20:34:57.852 | DEBUG    | axiestudio.services.settings.base:set_database_url:361 - No database_url provided, trying AXIESTUDIO_DATABASE_URL env variable
+
+2025-08-22 20:34:57.852 | DEBUG    | axiestudio.services.settings.base:set_database_url:364 - Using AXIESTUDIO_DATABASE_URL env variable.
+
+2025-08-22 20:34:57.852 | DEBUG    | axiestudio.services.settings.base:set_components_path:460 - Setting default components path to components_path
+
+2025-08-22 20:34:57.852 | DEBUG    | axiestudio.services.settings.base:set_components_path:468 - Components path: ['/app/.venv/lib/python3.12/site-packages/axiestudio/components']
+
+2025-08-22 20:34:57.853 | DEBUG    | axiestudio.services.settings.base:set_user_agent:313 - Setting user agent to axiestudio
+
+Traceback (most recent call last):
+
+  File "/app/.venv/bin/axiestudio", line 10, in <module>
+
+    sys.exit(main())
+
+             ^^^^^^
+
+  File "/app/.venv/lib/python3.12/site-packages/axiestudio/axiestudio_launcher.py", line 18, in main
+
+    from axiestudio.__main__ import main as axiestudio_main
+
+  File "/app/.venv/lib/python3.12/site-packages/axiestudio/__main__.py", line 31, in <module>
+
+    from axiestudio.main import setup_app
+
+  File "/app/.venv/lib/python3.12/site-packages/axiestudio/main.py", line 26, in <module>
+
+    from axiestudio.api import health_check_router, log_router, router
+
+  File "/app/.venv/lib/python3.12/site-packages/axiestudio/api/__init__.py", line 3, in <module>
+
+    from axiestudio.api.router import router
+
+  File "/app/.venv/lib/python3.12/site-packages/axiestudio/api/router.py", line 4, in <module>
+
+    from axiestudio.api.v1 import (
+
+  File "/app/.venv/lib/python3.12/site-packages/axiestudio/api/v1/__init__.py", line 4, in <module>
+
+    from axiestudio.api.v1.email_verification import router as email_verification_router
+
+  File "/app/.venv/lib/python3.12/site-packages/axiestudio/api/v1/email_verification.py", line 41
+
+    email: str
+
+IndentationError: unexpected indent
+
+2025-08-22 20:35:04.804 | DEBUG    | axiestudio.services.settings.base:set_database_url:361 - No database_url provided, trying AXIESTUDIO_DATABASE_URL env variable
+
+2025-08-22 20:35:04.804 | DEBUG    | axiestudio.services.settings.base:set_database_url:364 - Using AXIESTUDIO_DATABASE_URL env variable.
+
+2025-08-22 20:35:04.804 | DEBUG    | axiestudio.services.settings.base:set_components_path:460 - Setting default components path to components_path
+
+2025-08-22 20:35:04.805 | DEBUG    | axiestudio.services.settings.base:set_components_path:468 - Components path: ['/app/.venv/lib/python3.12/site-packages/axiestudio/components']
+
+2025-08-22 20:35:04.805 | DEBUG    | axiestudio.services.settings.base:set_user_agent:313 - Setting user agent to axiestudio
+
+Traceback (most recent call last):
+
+  File "/app/.venv/bin/axiestudio", line 10, in <module>
+
+    sys.exit(main())
+
+             ^^^^^^
+
+  File "/app/.venv/lib/python3.12/site-packages/axiestudio/axiestudio_launcher.py", line 18, in main
+
+    from axiestudio.__main__ import main as axiestudio_main
+
+  File "/app/.venv/lib/python3.12/site-packages/axiestudio/__main__.py", line 31, in <module>
+
+    from axiestudio.main import setup_app
+
+  File "/app/.venv/lib/python3.12/site-packages/axiestudio/main.py", line 26, in <module>
+
+    from axiestudio.api import health_check_router, log_router, router
+
+  File "/app/.venv/lib/python3.12/site-packages/axiestudio/api/__init__.py", line 3, in <module>
+
+    from axiestudio.api.router import router
+
+  File "/app/.venv/lib/python3.12/site-packages/axiestudio/api/router.py", line 4, in <module>
+
+    from axiestudio.api.v1 import (
+
+  File "/app/.venv/lib/python3.12/site-packages/axiestudio/api/v1/__init__.py", line 4, in <module>
+
+    from axiestudio.api.v1.email_verification import router as email_verification_router
+
+  File "/app/.venv/lib/python3.12/site-packages/axiestudio/api/v1/email_verification.py", line 41
+
+    email: str
+
+IndentationError: unexpected indent
+
+2025-08-22 20:35:11.266 | DEBUG    | axiestudio.services.settings.base:set_database_url:361 - No database_url provided, trying AXIESTUDIO_DATABASE_URL env variable
+
+2025-08-22 20:35:11.266 | DEBUG    | axiestudio.services.settings.base:set_database_url:364 - Using AXIESTUDIO_DATABASE_URL env variable.
+
+2025-08-22 20:35:11.266 | DEBUG    | axiestudio.services.settings.base:set_components_path:460 - Setting default components path to components_path
+
+2025-08-22 20:35:11.266 | DEBUG    | axiestudio.services.settings.base:set_components_path:468 - Components path: ['/app/.venv/lib/python3.12/site-packages/axiestudio/components']
+
+2025-08-22 20:35:11.266 | DEBUG    | axiestudio.services.settings.base:set_user_agent:313 - Setting user agent to axiestudio
+
+Traceback (most recent call last):
+
+  File "/app/.venv/bin/axiestudio", line 10, in <module>
+
+    sys.exit(main())
+
+             ^^^^^^
+
+  File "/app/.venv/lib/python3.12/site-packages/axiestudio/axiestudio_launcher.py", line 18, in main
+
+    from axiestudio.__main__ import main as axiestudio_main
+
+  File "/app/.venv/lib/python3.12/site-packages/axiestudio/__main__.py", line 31, in <module>
+
+    from axiestudio.main import setup_app
+
+  File "/app/.venv/lib/python3.12/site-packages/axiestudio/main.py", line 26, in <module>
+
+    from axiestudio.api import health_check_router, log_router, router
+
+  File "/app/.venv/lib/python3.12/site-packages/axiestudio/api/__init__.py", line 3, in <module>
+
+    from axiestudio.api.router import router
+
+  File "/app/.venv/lib/python3.12/site-packages/axiestudio/api/router.py", line 4, in <module>
+
+    from axiestudio.api.v1 import (
+
+  File "/app/.venv/lib/python3.12/site-packages/axiestudio/api/v1/__init__.py", line 4, in <module>
+
+    from axiestudio.api.v1.email_verification import router as email_verification_router
+
+  File "/app/.venv/lib/python3.12/site-packages/axiestudio/api/v1/email_verification.py", line 41
+
+    email: str
+
+IndentationError: unexpected indent
+2025-08-22 20:35:18.268 | DEBUG    | axiestudio.services.settings.base:set_database_url:361 - No database_url provided, trying AXIESTUDIO_DATABASE_URL env variable
+
+2025-08-22 20:35:18.268 | DEBUG    | axiestudio.services.settings.base:set_database_url:364 - Using AXIESTUDIO_DATABASE_URL env variable.
+
+2025-08-22 20:35:18.268 | DEBUG    | axiestudio.services.settings.base:set_components_path:460 - Setting default components path to components_path
+
+2025-08-22 20:35:18.268 | DEBUG    | axiestudio.services.settings.base:set_components_path:468 - Components path: ['/app/.venv/lib/python3.12/site-packages/axiestudio/components']
+
+2025-08-22 20:35:18.268 | DEBUG    | axiestudio.services.settings.base:set_user_agent:313 - Setting user agent to axiestudio
+
+Traceback (most recent call last):
+
+  File "/app/.venv/bin/axiestudio", line 10, in <module>
+
+    sys.exit(main())
+
+             ^^^^^^
+
+  File "/app/.venv/lib/python3.12/site-packages/axiestudio/axiestudio_launcher.py", line 18, in main
+
+    from axiestudio.__main__ import main as axiestudio_main
+
+  File "/app/.venv/lib/python3.12/site-packages/axiestudio/__main__.py", line 31, in <module>
+
+    from axiestudio.main import setup_app
+
+  File "/app/.venv/lib/python3.12/site-packages/axiestudio/main.py", line 26, in <module>
+
+    from axiestudio.api import health_check_router, log_router, router
+
+  File "/app/.venv/lib/python3.12/site-packages/axiestudio/api/__init__.py", line 3, in <module>
+
+    from axiestudio.api.router import router
+
+  File "/app/.venv/lib/python3.12/site-packages/axiestudio/api/router.py", line 4, in <module>
+
+    from axiestudio.api.v1 import (
+
+  File "/app/.venv/lib/python3.12/site-packages/axiestudio/api/v1/__init__.py", line 4, in <module>
+
+    from axiestudio.api.v1.email_verification import router as email_verification_router
+
+  File "/app/.venv/lib/python3.12/site-packages/axiestudio/api/v1/email_verification.py", line 41
+
+    email: str
+
+IndentationError: unexpected indent

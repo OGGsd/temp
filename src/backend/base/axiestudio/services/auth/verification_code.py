@@ -16,7 +16,7 @@ logger = logging.getLogger(__name__)
 
 def ensure_timezone_aware(dt: datetime | None) -> datetime | None:
     """
-        Ensure a datetime is timezone-aware.
+    Ensure a datetime is timezone-aware.
 
     This fixes the common issue where database datetimes are stored as naive
     but need to be compared with timezone-aware datetimes.
@@ -24,7 +24,7 @@ def ensure_timezone_aware(dt: datetime | None) -> datetime | None:
     Args:
         dt: Datetime that might be naive or aware
 
-        Returns:
+    Returns:
         datetime | None: Timezone-aware datetime or None
     """
     if dt is None:
@@ -39,193 +39,162 @@ def ensure_timezone_aware(dt: datetime | None) -> datetime | None:
 
 class VerificationCodeService:
     """
-        🏢 Enterprise-grade verification code service
+    Enterprise-grade verification code service
 
     Features:
         - Cryptographically secure code generation
         - Configurable expiry times
         - Rate limiting support
-    - Audit logging
+        - Audit logging
     """
 
     # Enterprise configuration
     CODE_LENGTH = 6
-    CODE_EXPIRY_MINUTES = 10 # Standard enterprise practice
-    MAX_ATTEMPTS = 5 # Prevent brute force attacks
+    CODE_EXPIRY_MINUTES = 10  # Standard enterprise practice
+    MAX_ATTEMPTS = 5  # Prevent brute force attacks
 
-@staticmethod
-def generate_verification_code() -> str:
-    """
+    @staticmethod
+    def generate_verification_code() -> str:
+        """
         Generate cryptographically secure 6-digit verification code
 
-    Uses secrets module for cryptographic randomness (not random module)
-    This is the same approach used by:
-        - Google (2FA codes)
-        - Microsoft (Azure verification)
-        - AWS (account verification)
-    - GitHub (2FA codes)
+        Uses secrets module for cryptographic randomness (not random module)
+        This is the same approach used by:
+            - Google (2FA codes)
+            - Microsoft (Azure verification)
+            - AWS (account verification)
+            - GitHub (2FA codes)
 
-    Returns:
-        str: 6-digit numeric code (e.g., "123456")
-    """
+        Returns:
+            str: 6-digit numeric code (e.g., "123456")
+        """
         code = ''.join(secrets.choice(string.digits) for _ in range(VerificationCodeService.CODE_LENGTH))
-    logger.info(f"Generated new verification code: {code[:2]}****")
-    return code
+        logger.info(f"Generated new verification code: {code[:2]}****")
+        return code
 
-@staticmethod
-def get_code_expiry() -> datetime:
-    """
+    @staticmethod
+    def get_code_expiry() -> datetime:
+        """
         Get code expiration timestamp
 
-    Enterprise standard: 10 minutes expiry
-    - Short enough to prevent abuse
-    - Long enough for user convenience
-
-    Returns:
-        datetime: UTC timestamp when code expires
-    """
-        expiry = datetime.now(timezone.utc) + timedelta(minutes=VerificationCodeService.CODE_EXPIRY_MINUTES)
-    logger.debug(f"Code will expire at: {expiry}")
-    return expiry
-
-@staticmethod
-def is_code_expired(expiry_time: datetime | None) -> bool:
-    """
-        🕐 Check if verification code has expired
-
-    Args:
-        expiry_time: When the code expires (UTC)
+        Enterprise standard: 10 minutes expiry
+        - Short enough to prevent abuse
+        - Long enough for user convenience
 
         Returns:
-        bool: True if expired, False if still valid
-    """
-    if not expiry_time:
-    return True
+            datetime: UTC timestamp when code expires
+        """
+        expiry = datetime.now(timezone.utc) + timedelta(minutes=VerificationCodeService.CODE_EXPIRY_MINUTES)
+        logger.debug(f"Code will expire at: {expiry}")
+        return expiry
+
+    @staticmethod
+    def is_code_expired(expiry_time: datetime | None) -> bool:
+        """
+        Check if verification code has expired
+
+        Args:
+            expiry_time: When the code expires (UTC)
+
+        Returns:
+            bool: True if expired, False if still valid
+        """
+        if not expiry_time:
+            return True
 
         # Ensure timezone-aware comparison to prevent offset-naive vs offset-aware errors
-    expiry_time = ensure_timezone_aware(expiry_time)
-    if not expiry_time:
-    return True
+        expiry_time = ensure_timezone_aware(expiry_time)
+        if not expiry_time:
+            return True
 
         now = datetime.now(timezone.utc)
-    expired = now > expiry_time
+        expired = now > expiry_time
 
-    if expired:
-    logger.warning(f"Code expired at {expiry_time}, current time: {now}")
+        if expired:
+            logger.warning(f"Code expired at {expiry_time}, current time: {now}")
         else:
-        remaining = expiry_time - now
-    logger.debug(f"Code valid for {remaining.total_seconds():.0f} more seconds")
+            remaining = expiry_time - now
+            logger.debug(f"Code valid for {remaining.total_seconds():.0f} more seconds")
 
-    return expired
+        return expired
 
-@staticmethod
-def validate_code_format(code: str) -> bool:
-    """
+    @staticmethod
+    def validate_code_format(code: str) -> bool:
+        """
         Validate code format (6 digits only)
 
-    Args:
-        code: User-provided code
+        Args:
+            code: User-provided code
 
         Returns:
-        bool: True if format is valid
-    """
-    if not code:
-    return False
+            bool: True if format is valid
+        """
+        if not code:
+            return False
 
         # Must be exactly 6 digits
-    if len(code) != VerificationCodeService.CODE_LENGTH:
-    logger.warning(f"Invalid code length: {len(code)} (expected {VerificationCodeService.CODE_LENGTH})")
-    return False
+        if len(code) != VerificationCodeService.CODE_LENGTH:
+            logger.warning(f"Invalid code length: {len(code)} (expected {VerificationCodeService.CODE_LENGTH})")
+            return False
 
-    # Must be all digits
-    if not code.isdigit():
-    logger.warning(f"Code contains non-digit characters: {code}")
-    return False
+        # Must be all digits
+        if not code.isdigit():
+            logger.warning(f"Code contains non-digit characters: {code}")
+            return False
 
-    return True
+        return True
 
-@staticmethod
-def is_rate_limited(attempts: int) -> bool:
-    """
-        🛡Check if user has exceeded maximum attempts
+    @staticmethod
+    def is_rate_limited(attempts: int) -> bool:
+        """
+        Check if user has exceeded maximum attempts
 
-    Args:
-        attempts: Number of failed verification attempts
+        Args:
+            attempts: Number of failed verification attempts
 
         Returns:
-        bool: True if rate limited
-    """
+            bool: True if rate limited
+        """
         rate_limited = attempts >= VerificationCodeService.MAX_ATTEMPTS
 
-    if rate_limited:
-    logger.warning(f"🛡Rate limit exceeded: {attempts}/{VerificationCodeService.MAX_ATTEMPTS} attempts")
+        if rate_limited:
+            logger.warning(f"Rate limit exceeded: {attempts}/{VerificationCodeService.MAX_ATTEMPTS} attempts")
 
-    return rate_limited
+        return rate_limited
 
-@staticmethod
-def get_remaining_attempts(current_attempts: int) -> int:
-    """
+    @staticmethod
+    def get_remaining_attempts(current_attempts: int) -> int:
+        """
         Get remaining verification attempts
 
-    Args:
-        current_attempts: Current number of failed attempts
+        Args:
+            current_attempts: Current number of failed attempts
 
         Returns:
-        int: Number of attempts remaining
-    """
+            int: Number of attempts remaining
+        """
         remaining = max(0, VerificationCodeService.MAX_ATTEMPTS - current_attempts)
-    logger.debug(f"Remaining attempts: {remaining}/{VerificationCodeService.MAX_ATTEMPTS}")
-    return remaining
+        logger.debug(f"Remaining attempts: {remaining}/{VerificationCodeService.MAX_ATTEMPTS}")
+        return remaining
 
-@staticmethod
-def create_verification_data() -> Tuple[str, datetime]:
-    """
+    @staticmethod
+    def create_verification_data() -> Tuple[str, datetime]:
+        """
         Create complete verification data (code + expiry)
 
-    Convenience method that generates both code and expiry time
-
-    Returns:
-        Tuple[str, datetime]: (verification_code, expiry_time)
-    """
-        code = VerificationCodeService.generate_verification_code()
-    expiry = VerificationCodeService.get_code_expiry()
-
-    logger.info(f"Created verification data - Code: {code[:2]}****, Expires: {expiry}")
-    return code, expiry
-
-@staticmethod
-def format_code_for_display(code: str) -> str:
-    """
-        Format code for display in emails/UI
-
-    Args:
-        code: 6-digit code
+        Convenience method that generates both code and expiry time
 
         Returns:
-        str: Formatted code with spacing (e.g., "123 456")
-    """
-    if len(code) == 6:
-    return f"{code[:3]} {code[3:]}"
-    return code
+            Tuple[str, datetime]: (verification_code, expiry_time)
+        """
+        code = VerificationCodeService.generate_verification_code()
+        expiry = VerificationCodeService.get_code_expiry()
 
-@staticmethod
-def get_security_info() -> dict:
-    """
-        Get security configuration info for API responses
-
-    Returns:
-        dict: Security configuration details
-    """
-    return {
-    "code_length": VerificationCodeService.CODE_LENGTH,
-    "expiry_minutes": VerificationCodeService.CODE_EXPIRY_MINUTES,
-    "max_attempts": VerificationCodeService.MAX_ATTEMPTS,
-    "security_level": "enterprise_grade",
-    "algorithm": "cryptographically_secure"
-    }
+        logger.info(f"Created verification data - Code: {code[:2]}****, Expires: {expiry}")
+        return code, expiry
 
 
-    # Convenience functions for easy import
+# Convenience functions for easy import
 def generate_code() -> str:
     """Generate a new 6-digit verification code"""
     return VerificationCodeService.generate_verification_code()
@@ -238,47 +207,47 @@ def create_verification() -> Tuple[str, datetime]:
 
 def validate_code(code: str, stored_code: str, expiry: datetime | None, attempts: int) -> dict:
     """
-        Complete code validation with enterprise security checks
+    Complete code validation with enterprise security checks
 
     Args:
         code: User-provided code
         stored_code: Code stored in database
         expiry: When the code expires
-    attempts: Current failed attempts
+        attempts: Current failed attempts
 
     Returns:
         dict: Validation result with detailed status
     """
-        result = {
-    "valid": False,
-    "error": None,
-    "remaining_attempts": VerificationCodeService.get_remaining_attempts(attempts),
-    "rate_limited": False,
-    "expired": False
+    result = {
+        "valid": False,
+        "error": None,
+        "remaining_attempts": VerificationCodeService.get_remaining_attempts(attempts),
+        "rate_limited": False,
+        "expired": False
     }
 
     # Check rate limiting first
     if VerificationCodeService.is_rate_limited(attempts):
         result["error"] = "Too many failed attempts. Please request a new code."
         result["rate_limited"] = True
-    return result
+        return result
 
     # Check code format
     if not VerificationCodeService.validate_code_format(code):
         result["error"] = "Invalid code format. Please enter 6 digits."
-    return result
+        return result
 
     # Check expiry
     if VerificationCodeService.is_code_expired(expiry):
         result["error"] = "Code has expired. Please request a new code."
         result["expired"] = True
-    return result
+        return result
 
     # Check code match
     if code != stored_code:
         result["error"] = f"Invalid code. {VerificationCodeService.get_remaining_attempts(attempts + 1)} attempts remaining."
         result["remaining_attempts"] = VerificationCodeService.get_remaining_attempts(attempts + 1)
-    return result
+        return result
 
     # Success!
     result["valid"] = True

@@ -6,7 +6,7 @@
 
 ```bash
 # Run Axie Studio with SQLite (simplest)
-docker run -p 7860:7860 axiestudio/axiestudio:latest
+docker run -p 7860:7860 axiestudio/axiestudiov1:latest
 
 # Run with PostgreSQL (production-ready)
 docker-compose -f docker-compose.production.yml up
@@ -17,7 +17,7 @@ docker-compose -f docker-compose.production.yml up
 ### Prerequisites
 
 1. **Docker Desktop** installed and running
-2. **Docker Hub account** with access to `axiestudio/axiestudio` repository
+2. **Docker Hub account** with access to `axiestudio/axiestudiov1` repository
 3. **Access Token**: Set `DOCKER_HUB_TOKEN` environment variable
 
 ### Login to Docker Hub
@@ -73,8 +73,8 @@ docker buildx inspect --bootstrap
 docker buildx build \
   --platform linux/amd64,linux/arm64 \
   --file docker/build_and_push.Dockerfile \
-  --tag axiestudio/axiestudio:latest \
-  --tag axiestudio/axiestudio:$(grep "^version" pyproject.toml | sed 's/.*"\(.*\)"$/\1/') \
+  --tag axiestudio/axiestudiov1:latest \
+  --tag axiestudio/axiestudiov1:$(grep "^version" pyproject.toml | sed 's/.*"\(.*\)"$/\1/') \
   --push \
   .
 
@@ -82,8 +82,8 @@ docker buildx build \
 docker buildx build \
   --platform linux/amd64,linux/arm64 \
   --file docker/build_and_push_backend.Dockerfile \
-  --build-arg AXIESTUDIO_IMAGE=axiestudio/axiestudio:latest \
-  --tag axiestudio/axiestudio-backend:latest \
+  --build-arg AXIESTUDIO_IMAGE=axiestudio/axiestudiov1:latest \
+  --tag axiestudio/axiestudiov1-backend:latest \
   --push \
   .
 ```
@@ -91,9 +91,9 @@ docker buildx build \
 ## 📦 Available Images
 
 ### Main Images
-- `axiestudio/axiestudio:latest` - Full Axie Studio with frontend and backend
-- `axiestudio/axiestudio:1.5.0` - Specific version tag
-- `axiestudio/axiestudio-backend:latest` - Backend-only (no frontend)
+- `axiestudio/axiestudiov1:latest` - Full Axie Studio with frontend and backend
+- `axiestudio/axiestudiov1:1.5.0` - Specific version tag
+- `axiestudio/axiestudiov1-backend:latest` - Backend-only (no frontend)
 
 ### Supported Platforms
 - `linux/amd64` (Intel/AMD 64-bit)
@@ -178,7 +178,7 @@ docker run -d \
   -e DATABASE_URL=postgresql://axiestudio:secure_password@axiestudio_postgres:5432/axiestudio \
   -e AXIESTUDIO_AUTO_LOGIN=false \
   -v axiestudio_data:/app/data \
-  axiestudio/axiestudio:latest
+  axiestudio/axiestudiov1:latest
 ```
 
 ## 🔍 Troubleshooting
@@ -201,10 +201,10 @@ docker exec -it axiestudio /bin/bash
 ### Rebuild Images
 ```bash
 # Remove old images
-docker rmi axiestudio/axiestudio:latest
+docker rmi axiestudio/axiestudiov1:latest
 
 # Pull latest
-docker pull axiestudio/axiestudio:latest
+docker pull axiestudio/axiestudiov1:latest
 ```
 
 ## 📊 Comparison with Langflow

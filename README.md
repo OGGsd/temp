@@ -80,7 +80,7 @@ ENABLE_AXIESTUDIO_STORE="false"
 You can run Axie Studio using Docker:
 
 ```shell
-docker run -it --rm -p 7860:7860 axiestudio/axiestudio:latest
+docker run -it --rm -p 7860:7860 axiestudio/axiestudiov1:latest
 ```
 
 ## 🚀 Deploy

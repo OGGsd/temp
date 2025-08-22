@@ -65,7 +65,7 @@ on:
 
 env:
   PYTHON_VERSION: "3.13"
-  TEST_TAG: "axiestudio/axiestudio:test"
+  TEST_TAG: "axiestudio/axiestudiov1:test"
 
 jobs:
   get-version:
@@ -196,24 +196,24 @@ jobs:
 
           if [[ "$release_type" == "base" || "$release_type" == "nightly-base" ]]; then
             # AXIESTUDIO-BASE RELEASE
-            echo "docker_tags=axiestudio/axiestudio${nightly_suffix}:base-${{ needs.get-version.outputs.version }},axiestudio/axiestudio${nightly_suffix}:base-latest" >> $GITHUB_OUTPUT
+            echo "docker_tags=axiestudio/axiestudiov1${nightly_suffix}:base-${{ needs.get-version.outputs.version }},axiestudio/axiestudiov1${nightly_suffix}:base-latest" >> $GITHUB_OUTPUT
             echo "file=./docker/build_and_push_base.Dockerfile" >> $GITHUB_OUTPUT
           else
             if [[ "${{ inputs.pre_release }}" == "true" ]]; then
               # AXIESTUDIO-MAIN PRE-RELEASE
-              echo "docker_tags=axiestudio/axiestudio${nightly_suffix}:${{ needs.get-version.outputs.version }}" >> $GITHUB_OUTPUT
+              echo "docker_tags=axiestudio/axiestudiov1${nightly_suffix}:${{ needs.get-version.outputs.version }}" >> $GITHUB_OUTPUT
               echo "file=./docker/build_and_push.Dockerfile" >> $GITHUB_OUTPUT
             elif [[ "$release_type" == "main-ep" ]]; then
               # AXIESTUDIO-MAIN (ENTRYPOINT) RELEASE
-              echo "docker_tags=axiestudio/axiestudio-ep${nightly_suffix}:${{ needs.get-version.outputs.version }},axiestudio/axiestudio-ep${nightly_suffix}:latest" >> $GITHUB_OUTPUT
+              echo "docker_tags=axiestudio/axiestudiov1-ep${nightly_suffix}:${{ needs.get-version.outputs.version }},axiestudio/axiestudiov1-ep${nightly_suffix}:latest" >> $GITHUB_OUTPUT
               echo "file=./docker/build_and_push_ep.Dockerfile" >> $GITHUB_OUTPUT
             elif [[ "$release_type" == "main" || "$release_type" == "nightly-main" ]]; then
               # AXIESTUDIO-MAIN RELEASE
-              echo "docker_tags=axiestudio/axiestudio${nightly_suffix}:${{ needs.get-version.outputs.version }},axiestudio/axiestudio${nightly_suffix}:latest" >> $GITHUB_OUTPUT
+              echo "docker_tags=axiestudio/axiestudiov1${nightly_suffix}:${{ needs.get-version.outputs.version }},axiestudio/axiestudiov1${nightly_suffix}:latest" >> $GITHUB_OUTPUT
               echo "file=./docker/build_and_push.Dockerfile" >> $GITHUB_OUTPUT
             elif [[ "$release_type" == "main-all" || "$release_type" == "nightly-main-all" ]]; then
               # AXIESTUDIO-MAIN (ALL OPTIONAL DEPS) RELEASE
-              echo "docker_tags=axiestudio/axiestudio-all${nightly_suffix}:${{ needs.get-version.outputs.version }},axiestudio/axiestudio-all${nightly_suffix}:latest" >> $GITHUB_OUTPUT
+              echo "docker_tags=axiestudio/axiestudiov1-all${nightly_suffix}:${{ needs.get-version.outputs.version }},axiestudio/axiestudiov1-all${nightly_suffix}:latest" >> $GITHUB_OUTPUT
               echo "file=./docker/build_and_push_with_extras.Dockerfile" >> $GITHUB_OUTPUT
             else
               echo "Invalid release type. Exiting the workflow."
@@ -269,8 +269,8 @@ jobs:
           file: ${{ needs.setup.outputs.file }}
           tags: ${{ needs.setup.outputs.docker_tags }}
           platforms: linux/amd64,linux/arm64
-          cache-from: type=registry,ref=axiestudio/axiestudio:buildcache
-          cache-to: type=registry,ref=axiestudio/axiestudio:buildcache,mode=max
+          cache-from: type=registry,ref=axiestudio/axiestudiov1:buildcache
+          cache-to: type=registry,ref=axiestudio/axiestudiov1:buildcache,mode=max
 
 
 
@@ -286,12 +286,12 @@ jobs:
         include:
           - component: docker-backend
             dockerfile: ./docker/build_and_push_backend.Dockerfile
-            tags: axiestudio/axiestudio-backend:${{ needs.get-version.outputs.version }},axiestudio/axiestudio-backend:latest
-            axiestudio_image: axiestudio/axiestudio:${{ needs.get-version.outputs.version }}
+            tags: axiestudio/axiestudiov1-backend:${{ needs.get-version.outputs.version }},axiestudio/axiestudiov1-backend:latest
+            axiestudio_image: axiestudio/axiestudiov1:${{ needs.get-version.outputs.version }}
           - component: docker-frontend
             dockerfile: ./docker/frontend/build_and_push_frontend.Dockerfile
-            tags: axiestudio/axiestudio-frontend:${{ needs.get-version.outputs.version }},axiestudio/axiestudio-frontend:latest
-            axiestudio_image: axiestudio/axiestudio:${{ needs.get-version.outputs.version }}
+            tags: axiestudio/axiestudiov1-frontend:${{ needs.get-version.outputs.version }},axiestudio/axiestudiov1-frontend:latest
+            axiestudio_image: axiestudio/axiestudiov1:${{ needs.get-version.outputs.version }}
     steps:
       - name: Check out the code at a specific ref
         uses: actions/checkout@v4

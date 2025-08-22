@@ -2,7 +2,7 @@ version: '3.8'
 
 services:
   axiestudio:
-    image: axiestudio/axiestudio:latest
+    image: axiestudio/axiestudiov1:latest
     ports:
       - "7860:7860"
     environment:

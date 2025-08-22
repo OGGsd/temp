@@ -154,16 +154,16 @@ coverage: ## run tests with coverage
 ######################
 
 docker_build: ## build docker image
-	docker build -f $(DOCKERFILE) -t axiestudio/axiestudio:$(VERSION) -t axiestudio/axiestudio:latest .
+	docker build -f $(DOCKERFILE) -t axiestudio/axiestudiov1:$(VERSION) -t axiestudio/axiestudiov1:latest .
 
 docker_build_backend: ## build backend docker image
-	docker build -f $(DOCKERFILE_BACKEND) -t axiestudio/axiestudio-backend:$(VERSION) -t axiestudio/axiestudio-backend:latest .
+	docker build -f $(DOCKERFILE_BACKEND) -t axiestudio/axiestudiov1-backend:$(VERSION) -t axiestudio/axiestudiov1-backend:latest .
 
 docker_build_frontend: ## build frontend docker image
-	docker build -f $(DOCKERFILE_FRONTEND) -t axiestudio/axiestudio-frontend:$(VERSION) -t axiestudio/axiestudio-frontend:latest .
+	docker build -f $(DOCKERFILE_FRONTEND) -t axiestudio/axiestudiov1-frontend:$(VERSION) -t axiestudio/axiestudiov1-frontend:latest .
 
 docker_run: ## run docker container
-	docker run -it --rm -p $(port):7860 axiestudio/axiestudio:latest
+	docker run -it --rm -p $(port):7860 axiestudio/axiestudiov1:latest
 
 docker_compose_up: ## run docker compose
 	docker-compose -f $(DOCKER_COMPOSE) up
