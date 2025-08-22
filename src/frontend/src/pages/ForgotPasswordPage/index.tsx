@@ -1,169 +1,390 @@
-import * as Form from "@radix-ui/react-form";
-import { useState } from "react";
-import { CustomLink } from "@/customization/components/custom-link";
+import React, { useState, useEffect } from "react";
+import { useCustomNavigate } from "@/customization/hooks/use-custom-navigate";
 import { Button } from "../../components/ui/button";
 import { Input } from "../../components/ui/input";
-import useAlertStore from "../../stores/alertStore";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../../components/ui/card";
+import { Alert, AlertDescription } from "../../components/ui/alert";
 import { api } from "../../controllers/API/api";
 
-export default function ForgotPasswordPage(): JSX.Element {
+interface ForgotPasswordStep {
+  step: 'email' | 'code' | 'password' | 'success';
+  email?: string;
+}
+
+export default function ForgotPasswordPage() {
+  const [currentStep, setCurrentStep] = useState<ForgotPasswordStep>({ step: 'email' });
   const [email, setEmail] = useState("");
+  const [verificationCode, setVerificationCode] = useState("");
+  const [newPassword, setNewPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const [isSubmitted, setIsSubmitted] = useState(false);
-  
-  const setSuccessData = useAlertStore((state) => state.setSuccessData);
-  const setErrorData = useAlertStore((state) => state.setErrorData);
+  const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
+  const [countdown, setCountdown] = useState(0);
 
-  const handleSubmit = async (event: React.FormEvent) => {
-    event.preventDefault();
-    
-    if (!email.trim()) {
-      setErrorData({
-        title: "Email Required",
-        list: ["Please enter your email address"],
-      });
-      return;
+  const navigate = useCustomNavigate();
+
+  // Countdown timer for resend button
+  useEffect(() => {
+    if (countdown > 0) {
+      const timer = setTimeout(() => setCountdown(countdown - 1), 1000);
+      return () => clearTimeout(timer);
     }
+  }, [countdown]);
 
+  const handleSendCode = async (e: React.FormEvent) => {
+    e.preventDefault();
     setIsLoading(true);
-    
+    setError('');
+
     try {
-      await api.post("/api/v1/email/forgot-password", {
-        email: email.trim()
-      });
-      
-      setIsSubmitted(true);
-      setSuccessData({
-        title: "Password reset email sent! Check your inbox and follow the instructions to reset your password.",
-      });
-      
-    } catch (error: any) {
-      setErrorData({
-        title: "Error",
-        list: [error?.response?.data?.detail || "Failed to send reset email. Please try again."],
-      });
+      const response = await api.post('/api/v1/email/forgot-password', { email });
+
+      if (response.data) {
+        setCurrentStep({ step: 'code', email });
+        setSuccess('Password reset code sent! Check your email.');
+        setCountdown(60); // 60 second cooldown
+      }
+    } catch (err: any) {
+      const errorMessage = err.response?.data?.detail || 'Failed to send password reset code';
+      setError(errorMessage);
     } finally {
       setIsLoading(false);
     }
   };
 
-  if (isSubmitted) {
-    return (
-      <div className="h-screen w-full">
-        <div className="flex h-full w-full flex-col items-center justify-center bg-gradient-to-br from-background to-muted/30">
-          <div className="flex w-96 flex-col items-center justify-center gap-6 rounded-2xl bg-card/80 backdrop-blur-sm border border-border/50 p-8 shadow-2xl">
-            <div className="flex flex-col items-center gap-4 text-center">
-              <div className="h-12 w-12 bg-green-500 text-white rounded-xl flex items-center justify-center">
-                ✓
-              </div>
-              <div>
-                <h1 className="text-2xl font-light text-foreground tracking-tight">
-                  Check Your Email
-                </h1>
-                <p className="text-sm text-muted-foreground mt-2">
-                  We've sent password reset instructions to <strong>{email}</strong>
-                </p>
-              </div>
-            </div>
-            
-            <div className="w-full space-y-4">
-              <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-                <p className="text-sm text-blue-800">
-                  📧 <strong>Check your email</strong> for a password reset link<br/>
-                  🔗 <strong>Click the link</strong> to be logged in automatically<br/>
-                  ⚙️ <strong>Go to Settings</strong> to change your password
-                </p>
-              </div>
-              
-              <div className="text-center space-y-2">
-                <p className="text-sm text-muted-foreground">
-                  Didn't receive the email?{" "}
-                  <button 
-                    onClick={() => {
-                      setIsSubmitted(false);
-                      setEmail("");
-                    }}
-                    className="text-primary hover:underline font-medium"
-                  >
-                    Try again
-                  </button>
-                </p>
-                <p className="text-sm text-muted-foreground">
-                  <CustomLink to="/login" className="text-primary hover:underline font-medium">
-                    Back to login
-                  </CustomLink>
-                </p>
-              </div>
-            </div>
+  const handleVerifyCode = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsLoading(true);
+    setError('');
+
+    try {
+      const response = await api.post('/api/v1/email/verify-password-reset-code', {
+        email: currentStep.email,
+        code: verificationCode
+      });
+
+      if (response.data.verified) {
+        setCurrentStep({ step: 'password', email: currentStep.email });
+        setSuccess('Code verified! Now set your new password.');
+      }
+    } catch (err: any) {
+      setError(err.response?.data?.detail || 'Invalid verification code');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleChangePassword = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsLoading(true);
+    setError('');
+
+    if (newPassword !== confirmPassword) {
+      setError('Passwords do not match');
+      setIsLoading(false);
+      return;
+    }
+
+    if (newPassword.length < 8) {
+      setError('Password must be at least 8 characters long');
+      setIsLoading(false);
+      return;
+    }
+
+    try {
+      const response = await api.post('/api/v1/email/change-password-with-code', {
+        email: currentStep.email,
+        code: verificationCode,
+        new_password: newPassword
+      });
+
+      if (response.data.success) {
+        setCurrentStep({ step: 'success' });
+        setSuccess('Password changed successfully! You can now log in.');
+
+        // Redirect to login after 3 seconds
+        setTimeout(() => {
+          navigate('/login');
+        }, 3000);
+      }
+    } catch (err: any) {
+      setError(err.response?.data?.detail || 'Failed to change password');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleResendCode = async () => {
+    if (countdown > 0) return;
+
+    setIsLoading(true);
+    setError('');
+
+    try {
+      await api.post('/api/v1/email/forgot-password', { email: currentStep.email });
+      setSuccess('New password reset code sent!');
+      setCountdown(60);
+    } catch (err: any) {
+      setError(err.response?.data?.detail || 'Failed to resend code');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // Render functions for different steps
+  const renderEmailStep = () => (
+    <Card className="w-full max-w-md mx-auto">
+      <CardHeader className="text-center">
+        <CardTitle className="text-2xl">Forgot Password?</CardTitle>
+        <CardDescription>
+          Enter your email address to receive a verification code
+        </CardDescription>
+      </CardHeader>
+      <CardContent>
+        <form onSubmit={handleSendCode} className="space-y-4">
+          <div>
+            <label htmlFor="email" className="block text-sm font-medium mb-2">
+              Email Address
+            </label>
+            <Input
+              id="email"
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="Enter your email address"
+              required
+              disabled={isLoading}
+            />
           </div>
-        </div>
-      </div>
-    );
-  }
+
+          {error && (
+            <Alert variant="destructive">
+              <AlertDescription>{error}</AlertDescription>
+            </Alert>
+          )}
+
+          {success && (
+            <Alert>
+              <AlertDescription>{success}</AlertDescription>
+            </Alert>
+          )}
+
+          <Button type="submit" className="w-full" disabled={isLoading}>
+            {isLoading ? 'Sending Code...' : 'Send Verification Code'}
+          </Button>
+
+          <div className="text-center">
+            <Button
+              type="button"
+              variant="ghost"
+              onClick={() => navigate('/login')}
+              className="text-sm"
+            >
+              Back to Login
+            </Button>
+          </div>
+        </form>
+      </CardContent>
+    </Card>
+  );
+
+  const renderCodeStep = () => (
+    <Card className="w-full max-w-md mx-auto">
+      <CardHeader className="text-center">
+        <CardTitle className="text-2xl">Enter Verification Code</CardTitle>
+        <CardDescription>
+          We sent a 6-digit code to<br />
+          <strong>{currentStep.email}</strong>
+        </CardDescription>
+      </CardHeader>
+      <CardContent>
+        <form onSubmit={handleVerifyCode} className="space-y-4">
+          <div>
+            <label htmlFor="code" className="block text-sm font-medium mb-2">
+              6-Digit Code
+            </label>
+            <Input
+              id="code"
+              type="text"
+              value={verificationCode}
+              onChange={(e) => setVerificationCode(e.target.value.replace(/\D/g, '').slice(0, 6))}
+              placeholder="123456"
+              required
+              disabled={isLoading}
+              className="text-center text-2xl tracking-widest"
+              maxLength={6}
+            />
+            <p className="text-xs text-gray-500 mt-1">
+              Code expires in 10 minutes
+            </p>
+          </div>
+
+          {error && (
+            <Alert variant="destructive">
+              <AlertDescription>{error}</AlertDescription>
+            </Alert>
+          )}
+
+          {success && (
+            <Alert>
+              <AlertDescription>{success}</AlertDescription>
+            </Alert>
+          )}
+
+          <Button type="submit" className="w-full" disabled={isLoading || verificationCode.length !== 6}>
+            {isLoading ? 'Verifying...' : 'Verify Code'}
+          </Button>
+
+          <div className="text-center space-y-2">
+            <Button
+              type="button"
+              variant="ghost"
+              onClick={handleResendCode}
+              disabled={countdown > 0 || isLoading}
+              className="text-sm"
+            >
+              {countdown > 0 ? `Resend in ${countdown}s` : 'Resend Code'}
+            </Button>
+            <br />
+
+            <Button
+              type="button"
+              variant="ghost"
+              onClick={() => setCurrentStep({ step: 'email' })}
+              className="text-sm"
+            >
+              Change Email
+            </Button>
+          </div>
+        </form>
+      </CardContent>
+    </Card>
+  );
+
+  const renderPasswordStep = () => (
+    <Card className="w-full max-w-md mx-auto">
+      <CardHeader className="text-center">
+        <CardTitle className="text-2xl">Set New Password</CardTitle>
+        <CardDescription>
+          Enter your new password for<br />
+          <strong>{currentStep.email}</strong>
+        </CardDescription>
+      </CardHeader>
+      <CardContent>
+        <form onSubmit={handleChangePassword} className="space-y-4">
+          <div>
+            <label htmlFor="newPassword" className="block text-sm font-medium mb-2">
+              New Password
+            </label>
+            <Input
+              id="newPassword"
+              type="password"
+              value={newPassword}
+              onChange={(e) => setNewPassword(e.target.value)}
+              placeholder="Enter new password"
+              required
+              disabled={isLoading}
+              minLength={8}
+            />
+          </div>
+
+          <div>
+            <label htmlFor="confirmPassword" className="block text-sm font-medium mb-2">
+              Confirm Password
+            </label>
+            <Input
+              id="confirmPassword"
+              type="password"
+              value={confirmPassword}
+              onChange={(e) => setConfirmPassword(e.target.value)}
+              placeholder="Confirm new password"
+              required
+              disabled={isLoading}
+              minLength={8}
+            />
+          </div>
+
+          {error && (
+            <Alert variant="destructive">
+              <AlertDescription>{error}</AlertDescription>
+            </Alert>
+          )}
+
+          {success && (
+            <Alert>
+              <AlertDescription>{success}</AlertDescription>
+            </Alert>
+          )}
+
+          <Button type="submit" className="w-full" disabled={isLoading || !newPassword || !confirmPassword}>
+            {isLoading ? 'Changing Password...' : 'Change Password'}
+          </Button>
+
+          <div className="text-center">
+            <Button
+              type="button"
+              variant="ghost"
+              onClick={() => setCurrentStep({ step: 'code', email: currentStep.email })}
+              className="text-sm"
+            >
+              Back to Code
+            </Button>
+          </div>
+        </form>
+      </CardContent>
+    </Card>
+  );
+
+  const renderSuccessStep = () => (
+    <Card className="w-full max-w-md mx-auto">
+      <CardHeader className="text-center">
+        <CardTitle className="text-2xl text-green-600">Password Changed!</CardTitle>
+        <CardDescription>
+          Your password has been successfully changed.<br />
+          Redirecting to login...
+        </CardDescription>
+      </CardHeader>
+      <CardContent className="text-center">
+        <div className="animate-spin mx-auto w-8 h-8 border-4 border-green-200 border-t-green-600 rounded-full mb-4"></div>
+        <p className="text-sm text-gray-600">
+          You can now log in with your new password!
+        </p>
+      </CardContent>
+    </Card>
+  );
 
   return (
-    <Form.Root onSubmit={handleSubmit} className="h-screen w-full">
-      <div className="flex h-full w-full flex-col items-center justify-center bg-gradient-to-br from-background to-muted/30">
-        <div className="flex w-96 flex-col items-center justify-center gap-6 rounded-2xl bg-card/80 backdrop-blur-sm border border-border/50 p-8 shadow-2xl">
-          <div className="flex flex-col items-center gap-4">
-            <div className="h-12 w-12 bg-primary text-primary-foreground rounded-xl flex items-center justify-center font-bold text-lg">
-              🔑
-            </div>
-            <div className="text-center">
-              <h1 className="text-2xl font-light text-foreground tracking-tight">
-                Forgot Password?
-              </h1>
-              <p className="text-sm text-muted-foreground mt-1">
-                Enter your email and we'll send you a reset link
-              </p>
-            </div>
+    <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
+      <div className="w-full max-w-md">
+        {/* Logo */}
+        <div className="text-center mb-8">
+          <img
+            src="https://scontent-arn2-1.xx.fbcdn.net/v/t39.30808-6/499498872_122132145854766980_5268724011023190696_n.jpg?_nc_cat=109&ccb=1-7&_nc_sid=6ee11a&_nc_ohc=u5dFev5AG-kQ7kNvwFS6K3m&_nc_oc=AdltILxg_X65VXBn-MK3Z58PgtgR7ITbbYcGrvZSWDnQLiIitDDiDq9uw1DoamQT61U&_nc_zt=23&_nc_ht=scontent-arn2-1.xx&_nc_gid=mpLb2UFdGIvVDUjGf2bZuw&oh=00_AfXfUa1TAFSuNwQPVCsbeshZuHKq0TqnRwUgl4EdrFju9w&oe=68A94B99"
+            alt="AxieStudio Logo"
+            className="mx-auto w-16 h-16 rounded-full mb-4"
+            onError={(e: any) => {
+              e.currentTarget.style.display = 'none';
+              e.currentTarget.nextElementSibling.style.display = 'flex';
+            }}
+          />
+          <div className="mx-auto w-16 h-16 bg-black rounded-full items-center justify-center mb-4 hidden">
+            <span className="text-white font-bold text-xl">AX</span>
           </div>
-          
-          <div className="w-full space-y-5">
-            <Form.Field name="email">
-              <Form.Label className="text-sm font-medium text-foreground data-[invalid]:text-destructive">
-                Email Address
-              </Form.Label>
-              <Form.Control asChild>
-                <Input
-                  type="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  className="w-full h-11 mt-2 border-border/60 focus:border-primary/60 focus:ring-1 focus:ring-primary/20"
-                  required
-                  placeholder="Enter your email address"
-                  disabled={isLoading}
-                />
-              </Form.Control>
-              <Form.Message match="valueMissing" className="text-xs text-destructive mt-1">
-                Please enter your email address
-              </Form.Message>
-              <Form.Message match="typeMismatch" className="text-xs text-destructive mt-1">
-                Please enter a valid email address
-              </Form.Message>
-            </Form.Field>
+          <h1 className="text-2xl font-bold text-gray-900">AxieStudio</h1>
+          <p className="text-gray-600">Password Reset</p>
+        </div>
 
-            <Form.Submit asChild>
-              <Button 
-                className="w-full h-11 mt-8 bg-primary hover:bg-primary/90 text-primary-foreground font-medium" 
-                type="submit"
-                disabled={isLoading}
-              >
-                {isLoading ? "Sending..." : "Send Reset Link"}
-              </Button>
-            </Form.Submit>
+        {/* Render based on current step */}
+        {currentStep.step === 'email' && renderEmailStep()}
+        {currentStep.step === 'code' && renderCodeStep()}
+        {currentStep.step === 'password' && renderPasswordStep()}
+        {currentStep.step === 'success' && renderSuccessStep()}
 
-            <div className="text-center mt-4">
-              <p className="text-sm text-muted-foreground">
-                Remember your password?{" "}
-                <CustomLink to="/login" className="text-primary hover:underline font-medium">
-                  Back to login
-                </CustomLink>
-              </p>
-            </div>
-          </div>
+        <div className="text-center mt-6 text-sm text-gray-500">
+          <p>Need help? Contact our support team</p>
         </div>
       </div>
-    </Form.Root>
+    </div>
   );
 }

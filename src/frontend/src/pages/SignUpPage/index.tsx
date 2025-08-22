@@ -11,7 +11,7 @@ import { Button } from "../../components/ui/button";
 import { Input } from "../../components/ui/input";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../../components/ui/card";
 import { Alert, AlertDescription } from "../../components/ui/alert";
-import { Loader2, Mail, Shield, ArrowLeft } from "lucide-react";
+// Icons removed for clean professional look
 import { api } from "../../controllers/API/api";
 import { AuthContext } from "../../contexts/authContext";
 import { SIGNUP_ERROR_ALERT } from "../../constants/alerts_constants";
@@ -38,7 +38,7 @@ export default function SignUp(): JSX.Element {
 
   const [isDisabled, setDisableBtn] = useState<boolean>(true);
 
-  // 🎯 NEW: Multi-step signup state
+  // NEW: Multi-step signup state
   const [currentStep, setCurrentStep] = useState<SignupStep>({ step: 'signup' });
   const [verificationCode, setVerificationCode] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -103,7 +103,7 @@ export default function SignUp(): JSX.Element {
           email: newUser.email,
           username: newUser.username
         });
-        setSuccess('✅ Account created! Check your email for a 6-digit verification code.');
+        setSuccess('Account created! Check your email for a 6-digit verification code.');
         setCountdown(60); // 60 second cooldown for resend
       },
       onError: (error) => {
@@ -120,8 +120,8 @@ export default function SignUp(): JSX.Element {
     });
   }
 
-  // 🎯 NEW: Code verification functions
-  const handleVerifyCode = async (e: React.FormEvent) => {
+  // NEW: Code verification functions
+  const handleVerifyCode = async (e: FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
     setError('');
@@ -139,7 +139,7 @@ export default function SignUp(): JSX.Element {
         }
 
         setCurrentStep({ step: 'success' });
-        setSuccess('🎉 Account activated successfully!');
+        setSuccess('Account activated successfully!');
 
         // Redirect to dashboard after 2 seconds
         setTimeout(() => {
@@ -173,7 +173,7 @@ export default function SignUp(): JSX.Element {
 
     try {
       await api.post('/api/v1/email/resend-code', { email: currentStep.email });
-      setSuccess('✅ New verification code sent!');
+      setSuccess('New verification code sent!');
       setCountdown(60);
     } catch (err: any) {
       setError(err.response?.data?.detail || 'Failed to resend code');
@@ -182,14 +182,11 @@ export default function SignUp(): JSX.Element {
     }
   };
 
-  // 🎯 Render functions for different steps
+  // Render functions for different steps
   const renderCodeStep = () => (
     <div className="h-screen w-full flex items-center justify-center bg-gradient-to-br from-background to-muted/30">
       <Card className="w-full max-w-md mx-auto">
         <CardHeader className="text-center">
-          <div className="mx-auto mb-4 w-12 h-12 bg-green-100 rounded-full flex items-center justify-center">
-            <Shield className="w-6 h-6 text-green-600" />
-          </div>
           <CardTitle className="text-2xl">Enter Verification Code</CardTitle>
           <CardDescription>
             We sent a 6-digit code to<br />
@@ -214,7 +211,7 @@ export default function SignUp(): JSX.Element {
                 maxLength={6}
               />
               <p className="text-xs text-gray-500 mt-1">
-                ⏰ Code expires in 10 minutes
+                Code expires in 10 minutes
               </p>
             </div>
 
@@ -231,14 +228,7 @@ export default function SignUp(): JSX.Element {
             )}
 
             <Button type="submit" className="w-full" disabled={isLoading || verificationCode.length !== 6}>
-              {isLoading ? (
-                <>
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  Verifying...
-                </>
-              ) : (
-                'Verify & Activate Account'
-              )}
+              {isLoading ? 'Verifying...' : 'Verify & Activate Account'}
             </Button>
 
             <div className="text-center space-y-2">
@@ -260,7 +250,6 @@ export default function SignUp(): JSX.Element {
                 onClick={() => setCurrentStep({ step: 'signup' })}
                 className="text-sm"
               >
-                <ArrowLeft className="mr-2 h-4 w-4" />
                 Back to Sign Up
               </Button>
             </div>
@@ -274,9 +263,6 @@ export default function SignUp(): JSX.Element {
     <div className="h-screen w-full flex items-center justify-center bg-gradient-to-br from-background to-muted/30">
       <Card className="w-full max-w-md mx-auto">
         <CardHeader className="text-center">
-          <div className="mx-auto mb-4 w-12 h-12 bg-green-100 rounded-full flex items-center justify-center">
-            <Shield className="w-6 h-6 text-green-600" />
-          </div>
           <CardTitle className="text-2xl text-green-600">Welcome to AxieStudio!</CardTitle>
           <CardDescription>
             Your account has been successfully activated.<br />
@@ -293,7 +279,7 @@ export default function SignUp(): JSX.Element {
     </div>
   );
 
-  // 🎯 Render based on current step
+  // Render based on current step
   if (currentStep.step === 'verify-code') {
     return renderCodeStep();
   }
@@ -311,7 +297,6 @@ export default function SignUp(): JSX.Element {
           return;
         }
 
-        const _data = Object.fromEntries(new FormData(event.currentTarget));
         event.preventDefault();
       }}
       className="h-screen w-full"
@@ -319,10 +304,10 @@ export default function SignUp(): JSX.Element {
       <div className="flex h-full w-full flex-col items-center justify-center bg-muted">
         <div className="flex w-72 flex-col items-center justify-center gap-2">
           <img
-            src="https://www.axiestudio.se/Axiestudiologo.jpg"
+            src="https://scontent-arn2-1.xx.fbcdn.net/v/t39.30808-6/499498872_122132145854766980_5268724011023190696_n.jpg?_nc_cat=109&ccb=1-7&_nc_sid=6ee11a&_nc_ohc=u5dFev5AG-kQ7kNvwFS6K3m&_nc_oc=AdltILxg_X65VXBn-MK3Z58PgtgR7ITbbYcGrvZSWDnQLiIitDDiDq9uw1DoamQT61U&_nc_zt=23&_nc_ht=scontent-arn2-1.xx&_nc_gid=mpLb2UFdGIvVDUjGf2bZuw&oh=00_AfXfUa1TAFSuNwQPVCsbeshZuHKq0TqnRwUgl4EdrFju9w&oe=68A94B99"
             alt="Axie Studio logo"
             className="mb-4 h-10 w-10 scale-[1.5] rounded"
-            onError={(e) => {
+            onError={(e: any) => {
               // Fallback to text logo if image fails to load
               e.currentTarget.style.display = 'none';
               e.currentTarget.nextElementSibling.style.display = 'flex';
@@ -466,7 +451,7 @@ export default function SignUp(): JSX.Element {
               </Button>
             </CustomLink>
 
-            {/* 🎯 TERTIARY METHOD: Account not activated backup */}
+            {/* TERTIARY METHOD: Account not activated backup */}
             <div className="text-center">
               <CustomLink to="/verify-email" className="text-sm text-muted-foreground hover:text-primary">
                 Account not activated? <span className="underline">Click here</span>

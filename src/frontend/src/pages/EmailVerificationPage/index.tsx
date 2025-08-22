@@ -1,10 +1,10 @@
-import { useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useState, type FormEvent } from "react";
 import { useSearchParams } from "react-router-dom";
 import { Button } from "../../components/ui/button";
 import { Input } from "../../components/ui/input";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../../components/ui/card";
 import { Alert, AlertDescription } from "../../components/ui/alert";
-import { Loader2, Mail, Shield, ArrowLeft } from "lucide-react";
+// Icons removed for clean professional look
 import { useCustomNavigate } from "../../customization/hooks/use-custom-navigate";
 import { CustomLink } from "../../customization/components/custom-link";
 import { AuthContext } from "../../contexts/authContext";
@@ -23,7 +23,7 @@ export default function EmailVerificationPage(): JSX.Element {
   const [message, setMessage] = useState("");
   const [isResending, setIsResending] = useState(false);
 
-  // 🎯 NEW: 6-digit code verification state
+  // NEW: 6-digit code verification state
   const [currentStep, setCurrentStep] = useState<VerificationStep>({ step: 'email' });
   const [email, setEmail] = useState('');
   const [verificationCode, setVerificationCode] = useState('');
@@ -107,8 +107,8 @@ export default function EmailVerificationPage(): JSX.Element {
     navigate("/login");
   };
 
-  // 🎯 NEW: 6-digit code verification functions
-  const handleSendCode = async (e: React.FormEvent) => {
+  // NEW: 6-digit code verification functions
+  const handleSendCode = async (e: FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
     setError('');
@@ -118,7 +118,7 @@ export default function EmailVerificationPage(): JSX.Element {
 
       if (response.data) {
         setCurrentStep({ step: 'code', email });
-        setSuccess('✅ Verification code sent! Check your email.');
+        setSuccess('Verification code sent! Check your email.');
         setCountdown(60); // 60 second cooldown
       }
     } catch (err: any) {
@@ -147,7 +147,7 @@ export default function EmailVerificationPage(): JSX.Element {
         }
 
         setCurrentStep({ step: 'success' });
-        setSuccess('🎉 Account activated successfully!');
+        setSuccess('Account activated successfully!');
 
         // Redirect to dashboard after 2 seconds
         setTimeout(() => {
@@ -181,7 +181,7 @@ export default function EmailVerificationPage(): JSX.Element {
 
     try {
       await api.post('/api/v1/email/resend-code', { email: currentStep.email });
-      setSuccess('✅ New verification code sent!');
+      setSuccess('New verification code sent!');
       setCountdown(60);
     } catch (err: any) {
       setError(err.response?.data?.detail || 'Failed to resend code');
@@ -190,13 +190,10 @@ export default function EmailVerificationPage(): JSX.Element {
     }
   };
 
-  // 🎯 NEW: Render functions for 6-digit code flow
+  // NEW: Render functions for 6-digit code flow
   const renderEmailStep = () => (
     <Card className="w-full max-w-md mx-auto">
       <CardHeader className="text-center">
-        <div className="mx-auto mb-4 w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">
-          <Mail className="w-6 h-6 text-blue-600" />
-        </div>
         <CardTitle className="text-2xl">Account Not Activated?</CardTitle>
         <CardDescription>
           Enter your email address to receive a verification code
@@ -232,14 +229,7 @@ export default function EmailVerificationPage(): JSX.Element {
           )}
 
           <Button type="submit" className="w-full" disabled={isLoading}>
-            {isLoading ? (
-              <>
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                Sending Code...
-              </>
-            ) : (
-              'Send Verification Code'
-            )}
+            {isLoading ? 'Sending Code...' : 'Send Verification Code'}
           </Button>
 
           <div className="text-center">
@@ -249,7 +239,6 @@ export default function EmailVerificationPage(): JSX.Element {
               onClick={() => navigate('/login')}
               className="text-sm"
             >
-              <ArrowLeft className="mr-2 h-4 w-4" />
               Back to Login
             </Button>
           </div>
@@ -261,9 +250,6 @@ export default function EmailVerificationPage(): JSX.Element {
   const renderCodeStep = () => (
     <Card className="w-full max-w-md mx-auto">
       <CardHeader className="text-center">
-        <div className="mx-auto mb-4 w-12 h-12 bg-green-100 rounded-full flex items-center justify-center">
-          <Shield className="w-6 h-6 text-green-600" />
-        </div>
         <CardTitle className="text-2xl">Enter Verification Code</CardTitle>
         <CardDescription>
           We sent a 6-digit code to<br />
@@ -288,7 +274,7 @@ export default function EmailVerificationPage(): JSX.Element {
               maxLength={6}
             />
             <p className="text-xs text-gray-500 mt-1">
-              ⏰ Code expires in 10 minutes
+              Code expires in 10 minutes
             </p>
           </div>
 
@@ -305,14 +291,7 @@ export default function EmailVerificationPage(): JSX.Element {
           )}
 
           <Button type="submit" className="w-full" disabled={isLoading || verificationCode.length !== 6}>
-            {isLoading ? (
-              <>
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                Verifying...
-              </>
-            ) : (
-              'Verify & Activate Account'
-            )}
+            {isLoading ? 'Verifying...' : 'Verify & Activate Account'}
           </Button>
 
           <div className="text-center space-y-2">
@@ -334,7 +313,6 @@ export default function EmailVerificationPage(): JSX.Element {
               onClick={() => setCurrentStep({ step: 'email' })}
               className="text-sm"
             >
-              <ArrowLeft className="mr-2 h-4 w-4" />
               Change Email
             </Button>
           </div>
@@ -346,9 +324,6 @@ export default function EmailVerificationPage(): JSX.Element {
   const renderSuccessStep = () => (
     <Card className="w-full max-w-md mx-auto">
       <CardHeader className="text-center">
-        <div className="mx-auto mb-4 w-12 h-12 bg-green-100 rounded-full flex items-center justify-center">
-          <Shield className="w-6 h-6 text-green-600" />
-        </div>
         <CardTitle className="text-2xl text-green-600">Account Activated!</CardTitle>
         <CardDescription>
           Your account has been successfully activated.<br />
