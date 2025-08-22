@@ -2,7 +2,7 @@ name: Test Docker images
 
 on:
   push:
-    branches: [main]
+    branches: [main, NEW]
     paths:
       - "docker/**"
       - "uv.lock"
