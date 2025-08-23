@@ -20,8 +20,6 @@ class UserFavoriteBase(SQLModel):
 
 class UserFavorite(UserFavoriteBase, table=True):  # type: ignore[call-arg]
     """Database model for user favorites."""
-    __tablename__ = "user_favorite"  # 🔧 EXPLICIT TABLE NAME FIX
-
     id: UUID = Field(default_factory=uuid4, primary_key=True, unique=True)
     user_id: UUID = Field(foreign_key="user.id", index=True)
 
