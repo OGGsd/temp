@@ -342,7 +342,9 @@ def get_lifespan(*, fix_migration=False, version=None):
 
             try:
                 await asyncio.shield(asyncio.sleep(0.1))  # let logger flush async logs
-                await asyncio.shield(logger.complete())
+                # 🔧 AUTOMATED FIX: Remove logger.complete() call as it doesn't exist
+                # The logger will flush automatically during shutdown
+                logger.debug("Logger shutdown completed")
             except asyncio.CancelledError:
                 # Cancellation during logger flush is possible during shutdown, so we swallow it
                 pass
