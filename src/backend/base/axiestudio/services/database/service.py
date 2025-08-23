@@ -274,12 +274,18 @@ class DatabaseService(Service):
     def _check_schema_health(connection) -> bool:
         inspector = inspect(connection)
 
-        model_mapping: dict[str, type[SQLModel]] = {
-            "flow": models.Flow,
-            "user": models.User,
-            "apikey": models.ApiKey,
-            # Add other SQLModel classes here
-        }
+        # 🔧 AUTOMATED: Build model mapping from all registered models
+        model_mapping: dict[str, type[SQLModel]] = {}
+        for model_name in models.__all__:
+            model_class = getattr(models, model_name)
+            if hasattr(model_class, '__tablename__'):
+                table_name = model_class.__tablename__
+            else:
+                # Default SQLModel table naming (lowercase class name)
+                table_name = model_class.__name__.lower()
+            model_mapping[table_name] = model_class
+
+        logger.debug(f"🔧 AUTOMATED DATABASE: Built model mapping for {len(model_mapping)} tables: {list(model_mapping.keys())}")
 
         # To account for tables that existed in older versions
         legacy_tables = ["flowstyle"]
@@ -617,7 +623,11 @@ class DatabaseService(Service):
 
         inspector = inspect(connection)
         table_names = inspector.get_table_names()
-        current_tables = ["flow", "user", "apikey", "folder", "message", "variable", "transaction", "vertex_build"]
+
+        # 🔧 AUTOMATED: Get current tables from SQLModel metadata instead of hardcoded list
+        from sqlmodel import SQLModel
+        current_tables = [table.name for table in SQLModel.metadata.sorted_tables]
+        logger.info(f"🔧 AUTOMATED DATABASE: Expected tables from metadata: {current_tables}")
 
         if table_names and all(table in table_names for table in current_tables):
             logger.info("✅ AUTOMATIC DATABASE SYSTEM: All required tables already exist")
@@ -717,26 +727,31 @@ class DatabaseService(Service):
 
     async def _verify_critical_tables(self, session) -> None:
         """🔧 AUTOMATED DATABASE: Verify that critical tables exist."""
-        critical_tables = ["user", "flow", "apikey", "folder", "message", "variable", "user_favorite"]
+        # 🔧 AUTOMATED: Get ALL table names from SQLModel metadata
+        from sqlmodel import SQLModel
 
-        for table_name in critical_tables:
+        # Get all registered table names from SQLModel metadata
+        registered_tables = [table.name for table in SQLModel.metadata.sorted_tables]
+        logger.info(f"🔧 AUTOMATED DATABASE: Found {len(registered_tables)} registered tables: {registered_tables}")
+
+        for table_name in registered_tables:
             try:
                 await session.exec(text(f"SELECT 1 FROM {table_name} LIMIT 1"))
                 logger.debug(f"✅ AUTOMATED DATABASE: Table '{table_name}' verified")
-            except Exception:
-                logger.warning(f"⚠️ AUTOMATED DATABASE: Table '{table_name}' missing or inaccessible")
+            except Exception as e:
+                logger.warning(f"⚠️ AUTOMATED DATABASE: Table '{table_name}' missing or inaccessible: {e}")
 
     async def _create_tables_alternative(self) -> None:
         """🔧 AUTOMATED DATABASE: Alternative table creation method."""
         try:
-            # Import specific models to ensure they're registered
-            from axiestudio.services.database.models.user.model import User
-            from axiestudio.services.database.models.flow.model import Flow
-            from axiestudio.services.database.models.api_key.model import ApiKey
-            from axiestudio.services.database.models.folder.model import Folder
-            from axiestudio.services.database.models.message.model import Message
-            from axiestudio.services.database.models.variable.model import Variable
-            from axiestudio.services.database.models.user_favorite.model import UserFavorite
+            # 🔧 AUTOMATED: Import ALL models from the models package to ensure registration
+            from axiestudio.services.database import models
+
+            # Force import of all models by accessing the __all__ list
+            for model_name in models.__all__:
+                getattr(models, model_name)
+
+            logger.info(f"🔧 AUTOMATED DATABASE: Imported {len(models.__all__)} models for registration")
 
             async with self.with_session() as session:
                 # Use SQLModel's create_all method
