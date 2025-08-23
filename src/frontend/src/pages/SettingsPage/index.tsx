@@ -49,6 +49,16 @@ export default function SettingsPage(): JSX.Element {
       ),
     },
     {
+      title: "Local LLMs",
+      href: "/settings/local-llms",
+      icon: (
+        <ForwardedIconComponent
+          name="Bot"
+          className="w-4 flex-shrink-0 justify-start stroke-[1.5]"
+        />
+      ),
+    },
+    {
       title: "Global Variables",
       href: "/settings/global-variables",
       icon: (

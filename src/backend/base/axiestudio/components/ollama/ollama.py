@@ -1,4 +1,5 @@
 import asyncio
+import os
 from typing import Any
 from urllib.parse import urljoin
 
@@ -32,8 +33,9 @@ class ChatOllamaComponent(LCModelComponent):
         MessageTextInput(
             name="base_url",
             display_name="Base URL",
-            info="Endpoint of the Ollama API.",
+            info="Endpoint of the Ollama API. Leave empty to auto-detect embedded Ollama.",
             value="",
+            placeholder="Auto-detect embedded Ollama",
         ),
         DropdownInput(
             name="model_name",
@@ -155,9 +157,14 @@ class ChatOllamaComponent(LCModelComponent):
             mirostat_eta = self.mirostat_eta
             mirostat_tau = self.mirostat_tau
 
+        # Auto-detect embedded Ollama if base_url is empty
+        base_url = self.base_url
+        if not base_url and self.is_embedded_ollama_enabled():
+            base_url = f"http://{self.get_embedded_ollama_url()}"
+
         # Mapping system settings to their corresponding values
         llm_params = {
-            "base_url": self.base_url,
+            "base_url": base_url,
             "model": self.model_name,
             "mirostat": mirostat_value,
             "format": self.format,
@@ -195,6 +202,14 @@ class ChatOllamaComponent(LCModelComponent):
 
         return output
 
+    def get_embedded_ollama_url(self) -> str:
+        """Get the embedded Ollama URL from environment or default."""
+        return os.getenv("OLLAMA_HOST", "127.0.0.1:11434")
+
+    def is_embedded_ollama_enabled(self) -> bool:
+        """Check if embedded Ollama is enabled."""
+        return os.getenv("AXIESTUDIO_EMBEDDED_OLLAMA", "false").lower() == "true"
+
     async def is_valid_ollama_url(self, url: str) -> bool:
         try:
             async with httpx.AsyncClient() as client:
@@ -228,19 +243,36 @@ class ChatOllamaComponent(LCModelComponent):
                 base_url_value = build_config["base_url"].get("value", "")
 
             if not await self.is_valid_ollama_url(base_url_value):
-                # Check if any URL in the list is valid
+                # Check if any URL in the list is valid, prioritizing embedded Ollama
                 valid_url = ""
-                check_urls = URL_LIST
+                check_urls = []
+
+                # If embedded Ollama is enabled, prioritize it
+                if self.is_embedded_ollama_enabled():
+                    embedded_url = f"http://{self.get_embedded_ollama_url()}"
+                    check_urls.append(embedded_url)
+
+                # Add user-provided URL if exists
                 if self.base_url:
-                    check_urls = [self.base_url, *URL_LIST]
+                    check_urls.append(self.base_url)
+
+                # Add standard URLs
+                check_urls.extend(URL_LIST)
+
+                # Remove duplicates while preserving order
+                seen = set()
+                check_urls = [url for url in check_urls if not (url in seen or seen.add(url))]
+
                 for url in check_urls:
                     if await self.is_valid_ollama_url(url):
                         valid_url = url
+                        logger.info(f"✅ Found valid Ollama instance at: {url}")
                         break
+
                 if valid_url != "":
                     build_config["base_url"]["value"] = valid_url
                 else:
-                    msg = "No valid Ollama URL found."
+                    msg = "No valid Ollama URL found. Please ensure Ollama is running or check your configuration."
                     raise ValueError(msg)
         if field_name in {"model_name", "base_url", "tool_model_enabled"}:
             if await self.is_valid_ollama_url(self.base_url):

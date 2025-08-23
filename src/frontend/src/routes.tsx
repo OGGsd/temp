@@ -22,6 +22,13 @@ import Playground from "@/pages/Playground";
 import PricingPage from "@/pages/PricingPage";
 import ResetPasswordPage from "@/pages/ResetPasswordPage";
 import SettingsPage from "@/pages/SettingsPage";
+import GeneralPage from "@/pages/SettingsPage/pages/GeneralPage";
+import GlobalVariablesPage from "@/pages/SettingsPage/pages/GlobalVariablesPage";
+import LocalLLMsPage from "@/pages/SettingsPage/pages/LocalLLMsPage";
+import MCPServersPage from "@/pages/SettingsPage/pages/MCPServersPage";
+import MessagesPage from "@/pages/SettingsPage/pages/messagesPage";
+import ShortcutsPage from "@/pages/SettingsPage/pages/ShortcutsPage";
+import SubscriptionPage from "@/pages/SettingsPage/pages/SubscriptionPage";
 import ShowcasePage from "@/pages/ShowcasePage";
 import SignUpPage from "@/pages/SignUpPage";
 import StorePage from "@/pages/StorePage";
@@ -136,6 +143,36 @@ const router = createBrowserRouter([
               {
                 path: "settings",
                 element: <SettingsPage />,
+                children: [
+                  {
+                    path: "general",
+                    element: <GeneralPage />,
+                  },
+                  {
+                    path: "local-llms",
+                    element: <LocalLLMsPage />,
+                  },
+                  {
+                    path: "global-variables",
+                    element: <GlobalVariablesPage />,
+                  },
+                  {
+                    path: "mcp-servers",
+                    element: <MCPServersPage />,
+                  },
+                  {
+                    path: "shortcuts",
+                    element: <ShortcutsPage />,
+                  },
+                  {
+                    path: "messages",
+                    element: <MessagesPage />,
+                  },
+                  {
+                    path: "subscription",
+                    element: <SubscriptionPage />,
+                  },
+                ],
               },
               {
                 path: "playground",

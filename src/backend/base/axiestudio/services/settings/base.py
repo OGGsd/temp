@@ -179,6 +179,18 @@ class Settings(BaseSettings):
     """Whether to store environment variables as Global Variables in the database."""
     variables_to_get_from_environment: list[str] = VARIABLES_TO_GET_FROM_ENVIRONMENT
     """List of environment variables to get from the environment and store in the database."""
+
+    # Ollama Settings
+    embedded_ollama_enabled: bool = True
+    """Whether to use embedded Ollama instance."""
+    ollama_host: str = "127.0.0.1:11434"
+    """Host and port for Ollama service."""
+    ollama_models_dir: str = "/app/ollama-data"
+    """Directory to store Ollama models."""
+    ollama_default_model: str = "gemma2:2b"
+    """Default model to use for Ollama components."""
+    ollama_auto_pull_models: bool = True
+    """Whether to automatically pull missing models."""
     worker_timeout: int = 300
     """Timeout for the API calls in seconds."""
     frontend_timeout: int = 0

@@ -7,6 +7,7 @@ from axiestudio.api.v1.favorites import router as favorites_router
 from axiestudio.api.v1.files import router as files_router
 from axiestudio.api.v1.flows import router as flows_router
 from axiestudio.api.v1.folders import router as folders_router
+from axiestudio.api.v1.local_llms import router as local_llms_router
 from axiestudio.api.v1.login import router as login_router
 from axiestudio.api.v1.mcp import router as mcp_router
 from axiestudio.api.v1.mcp_projects import router as mcp_projects_router
@@ -30,6 +31,7 @@ __all__ = [
     "files_router",
     "flows_router",
     "folders_router",
+    "local_llms_router",
     "login_router",
     "mcp_projects_router",
     "mcp_router",

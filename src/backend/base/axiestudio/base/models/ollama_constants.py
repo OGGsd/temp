@@ -42,8 +42,8 @@ OLLAMA_TOOL_MODELS_BASE = [
 
 
 URL_LIST = [
+    "http://127.0.0.1:11434",  # Embedded Ollama (prioritized)
     "http://localhost:11434",
     "http://host.docker.internal:11434",
-    "http://127.0.0.1:11434",
     "http://0.0.0.0:11434",
 ]

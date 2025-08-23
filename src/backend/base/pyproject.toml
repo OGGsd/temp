@@ -24,6 +24,7 @@ dependencies = [
     "gunicorn>=22.0.0,<24.0.0",
     "langchain~=0.3.21",
     "langchain-community~=0.3.20",
+    "langchain-ollama~=0.2.0",
     "langchain-core~=0.3.45",
     "langchainhub~=0.1.15",
     "loguru>=0.7.1,<1.0.0",

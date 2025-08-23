@@ -66,12 +66,17 @@ FROM python:3.12.3-slim AS runtime
 
 RUN apt-get update \
     && apt-get upgrade -y \
-    && apt-get install -y curl git libpq5 gnupg \
+    && apt-get install -y curl git libpq5 gnupg procps \
     && curl -fsSL https://deb.nodesource.com/setup_18.x | bash - \
     && apt-get install -y nodejs \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/* \
     && useradd user -u 1000 -g 0 --no-create-home --home-dir /app/data
+
+# Install Ollama
+RUN curl -fsSL https://ollama.ai/install.sh | sh
+
+
 
 COPY --from=builder --chown=1000 /app/.venv /app/.venv
 
@@ -84,10 +89,25 @@ LABEL org.opencontainers.image.licenses=MIT
 LABEL org.opencontainers.image.url=https://github.com/axiestudio/axiestudio
 LABEL org.opencontainers.image.source=https://github.com/axiestudio/axiestudio
 
+# Create model directory and set permissions
+RUN mkdir -p /app/ollama-data && \
+    chown -R 1000:0 /app/ollama-data
+
+# Note: Model will be downloaded on first startup by the startup script
+# This avoids Docker build complexity and ensures proper permissions
+
+# Switch to user and set up environment
 USER user
 WORKDIR /app
 
 ENV AXIESTUDIO_HOST=0.0.0.0
 ENV AXIESTUDIO_PORT=7860
+ENV OLLAMA_HOST=127.0.0.1:11434
+ENV OLLAMA_DATA_DIR=/app/ollama-data
+ENV AXIESTUDIO_EMBEDDED_OLLAMA=true
 
-CMD ["axiestudio", "run"]
+# Copy startup script
+COPY --chown=1000:0 scripts/start-with-ollama.sh /app/start-with-ollama.sh
+RUN chmod +x /app/start-with-ollama.sh
+
+CMD ["/app/start-with-ollama.sh"]

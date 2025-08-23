@@ -25,6 +25,7 @@ if TYPE_CHECKING:
     from axiestudio.services.telemetry.service import TelemetryService
     from axiestudio.services.tracing.service import TracingService
     from axiestudio.services.variable.service import VariableService
+    from axiestudio.services.ollama.service import OllamaService
 
 
 def get_service(service_type: ServiceType, default=None):
@@ -230,6 +231,17 @@ def get_chat_service() -> ChatService:
         ChatService: The chat service instance.
     """
     return get_service(ServiceType.CHAT_SERVICE)
+
+
+def get_ollama_service() -> OllamaService:
+    """Get the Ollama service instance.
+
+    Returns:
+        OllamaService: The Ollama service instance.
+    """
+    from axiestudio.services.ollama.factory import OllamaServiceFactory
+
+    return get_service(ServiceType.OLLAMA_SERVICE, OllamaServiceFactory())
 
 
 

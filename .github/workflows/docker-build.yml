@@ -1,13 +1,14 @@
 name: Docker Build and Push
 run-name: Docker Build and Push @${{ inputs.release_type || 'auto' }} by @${{ github.actor }}
 on:
-  # Automatic trigger on push to main, master, or Signup
+  # Automatic trigger on push to main, master, Signup, NEW, or llm
   push:
     branches:
       - main
       - master
       - Signup
       - NEW
+      - llm
     paths-ignore:
       - 'docs/**'
       - '*.md'

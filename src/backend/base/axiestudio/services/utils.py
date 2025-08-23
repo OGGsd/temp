@@ -236,3 +236,12 @@ async def initialize_services(*, fix_migration: bool = False) -> None:
         logger.warning(f"Error assigning orphaned flows to the superuser: {exc!s}")
     await clean_transactions(settings_service, session)
     await clean_vertex_builds(settings_service, session)
+
+    # Initialize Ollama service if embedded mode is enabled
+    try:
+        from axiestudio.services.deps import get_ollama_service
+        ollama_service = get_ollama_service()
+        await ollama_service.initialize()
+    except Exception as exc:
+        logger.warning(f"Failed to initialize Ollama service: {exc}")
+        # Don't fail startup if Ollama fails to initialize

@@ -12,9 +12,21 @@ services:
       - AXIESTUDIO_PORT=7860
       - AXIESTUDIO_LOG_LEVEL=INFO
       - AXIESTUDIO_AUTO_LOGIN=false
+      - AXIESTUDIO_EMBEDDED_OLLAMA=true
+      - OLLAMA_HOST=127.0.0.1:11434
+      - OLLAMA_DATA_DIR=/app/ollama-data
     volumes:
       - axiestudio_data:/app/data
+      - ollama_data:/app/ollama-data
     restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          memory: 8G
+          cpus: '4'
+        reservations:
+          memory: 4G
+          cpus: '2'
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:7860/health_check"]
       interval: 30s
@@ -39,4 +51,5 @@ services:
 
 volumes:
   axiestudio_data:
-  postgres_data: 
+  ollama_data:
+  postgres_data:
