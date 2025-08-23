@@ -357,12 +357,12 @@ class DatabaseService(Service):
                 logger.info("🔧 AUTOMATED DATABASE FIX: Migration conflict detected")
                 exc_str = str(exc)
 
-                # 🔧 AUTOMATED FIX 1: Handle user_favorite table mismatch
-                if "user_favorite" in exc_str and "remove_table" in exc_str:
-                    logger.info("🔧 AUTOMATED FIX: user_favorite table conflict - stamping current revision")
+                # 🔧 AUTOMATED FIX 1: Handle user_favorite/userfavorite table mismatch
+                if ("user_favorite" in exc_str or "userfavorite" in exc_str) and ("remove_table" in exc_str or "add_table" in exc_str):
+                    logger.info("🔧 AUTOMATED FIX: user_favorite/userfavorite table naming conflict - stamping current revision")
                     try:
                         command.stamp(alembic_cfg, "head")
-                        logger.info("✅ AUTOMATED FIX: user_favorite table conflict resolved")
+                        logger.info("✅ AUTOMATED FIX: user_favorite table naming conflict resolved")
                         return
                     except Exception as stamp_exc:
                         logger.error(f"❌ AUTOMATED FIX: Failed to stamp revision: {stamp_exc}")
