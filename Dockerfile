@@ -79,6 +79,7 @@ RUN curl -fsSL https://ollama.ai/install.sh | sh
 
 
 COPY --from=builder --chown=1000 /app/.venv /app/.venv
+COPY --from=builder --chown=1000 /app/src /app/src
 
 # Place executables in the environment at the front of the path
 ENV PATH="/app/.venv/bin:$PATH"
