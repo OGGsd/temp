@@ -4,7 +4,7 @@ import asyncio
 import os
 from typing import TYPE_CHECKING
 
-from loguru import logger
+from axiestudio.logging import logger
 from typing_extensions import override
 
 from axiestudio.services.auth import utils as auth_utils

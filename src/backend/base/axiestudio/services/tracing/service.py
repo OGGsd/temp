@@ -7,7 +7,7 @@ from contextlib import asynccontextmanager
 from contextvars import ContextVar
 from typing import TYPE_CHECKING, Any
 
-from loguru import logger
+from axiestudio.logging import logger
 
 from axiestudio.services.base import Service
 

@@ -1,7 +1,7 @@
 """CLI command to manually migrate subscription database schema."""
 
 import asyncio
-from loguru import logger
+from axiestudio.logging import logger
 from sqlalchemy import text
 
 from axiestudio.services.deps import get_db_service

@@ -8,7 +8,7 @@ from typing import Any
 
 from cachetools import TTLCache, keys
 from fastapi import HTTPException
-from loguru import logger
+from axiestudio.logging import logger
 
 from axiestudio.custom.eval import eval_custom_component_code
 from axiestudio.custom.schema import CallableCodeDetails, ClassCodeDetails, MissingDefault

@@ -1,6 +1,6 @@
 from typing import Any
 
-from loguru import logger
+from axiestudio.logging import logger
 from requests.exceptions import ConnectionError  # noqa: A004
 from urllib3.exceptions import MaxRetryError, NameResolutionError
 

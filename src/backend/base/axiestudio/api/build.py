@@ -6,7 +6,7 @@ import uuid
 from collections.abc import AsyncIterator
 
 from fastapi import BackgroundTasks, HTTPException, Response
-from loguru import logger
+from axiestudio.logging import logger
 from sqlmodel import select
 
 from axiestudio.api.disconnect import DisconnectHandlerStreamingResponse

@@ -1,6 +1,6 @@
 import boto3
 from botocore.exceptions import ClientError, NoCredentialsError
-from loguru import logger
+from axiestudio.logging import logger
 
 from .service import StorageService
 

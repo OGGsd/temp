@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import asyncio
 
-from loguru import logger
+from axiestudio.logging import logger
 
 from axiestudio.events.event_manager import EventManager
 from axiestudio.services.base import Service

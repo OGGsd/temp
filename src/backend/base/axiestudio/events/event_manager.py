@@ -8,7 +8,7 @@ from functools import partial
 from typing import TYPE_CHECKING
 
 from fastapi.encoders import jsonable_encoder
-from loguru import logger
+from axiestudio.logging import logger
 from typing_extensions import Protocol
 
 from axiestudio.schema.playground_events import create_event_by_type

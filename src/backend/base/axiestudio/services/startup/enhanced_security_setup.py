@@ -6,7 +6,7 @@ Following the same pattern as subscription_setup.py
 
 import asyncio
 from sqlalchemy import text
-from loguru import logger
+from axiestudio.logging import logger
 
 from axiestudio.services.deps import get_db_service
 

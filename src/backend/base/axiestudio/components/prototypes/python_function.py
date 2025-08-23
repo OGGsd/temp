@@ -1,6 +1,6 @@
 from collections.abc import Callable
 
-from loguru import logger
+from axiestudio.logging import logger
 
 from axiestudio.custom.custom_component.component import Component
 from axiestudio.custom.utils import get_function

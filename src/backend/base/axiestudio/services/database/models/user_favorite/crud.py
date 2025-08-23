@@ -3,7 +3,7 @@
 from typing import List, Optional
 from uuid import UUID
 
-from loguru import logger
+from axiestudio.logging import logger
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlmodel import select
 

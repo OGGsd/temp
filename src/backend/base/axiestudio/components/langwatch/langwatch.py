@@ -3,7 +3,7 @@ import os
 from typing import Any
 
 import httpx
-from loguru import logger
+from axiestudio.logging import logger
 
 from axiestudio.base.langwatch.utils import get_cached_evaluators
 from axiestudio.custom.custom_component.component import Component

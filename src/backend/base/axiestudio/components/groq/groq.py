@@ -1,5 +1,5 @@
 import requests
-from loguru import logger
+from axiestudio.logging import logger
 from pydantic.v1 import SecretStr
 
 from axiestudio.base.models.groq_constants import (

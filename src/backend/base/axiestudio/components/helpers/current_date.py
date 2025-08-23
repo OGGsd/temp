@@ -1,7 +1,7 @@
 from datetime import datetime
 from zoneinfo import ZoneInfo, available_timezones
 
-from loguru import logger
+from axiestudio.logging import logger
 
 from axiestudio.custom.custom_component.component import Component
 from axiestudio.io import DropdownInput, Output

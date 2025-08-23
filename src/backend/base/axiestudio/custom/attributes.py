@@ -1,7 +1,7 @@
 from collections.abc import Callable
 
 import emoji
-from loguru import logger
+from axiestudio.logging import logger
 
 
 def validate_icon(value: str):

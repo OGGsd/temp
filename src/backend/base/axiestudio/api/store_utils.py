@@ -3,7 +3,7 @@ Store utilities for Axie Studio.
 Since store functionality is disabled, these are minimal implementations.
 """
 import httpx
-from loguru import logger
+from axiestudio.logging import logger
 from pydantic import BaseModel
 from typing import Optional
 

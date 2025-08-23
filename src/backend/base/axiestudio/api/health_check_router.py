@@ -1,7 +1,7 @@
 import uuid
 
 from fastapi import APIRouter, HTTPException, status
-from loguru import logger
+from axiestudio.logging import logger
 from pydantic import BaseModel
 from sqlmodel import select
 

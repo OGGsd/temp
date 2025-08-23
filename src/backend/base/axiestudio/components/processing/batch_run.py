@@ -3,7 +3,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, Any, cast
 
 import toml  # type: ignore[import-untyped]
-from loguru import logger
+from axiestudio.logging import logger
 
 from axiestudio.custom.custom_component.component import Component
 from axiestudio.io import BoolInput, DataFrameInput, HandleInput, MessageTextInput, MultilineInput, Output

@@ -1,6 +1,6 @@
 import anyio
 from aiofile import async_open
-from loguru import logger
+from axiestudio.logging import logger
 
 from .service import StorageService
 

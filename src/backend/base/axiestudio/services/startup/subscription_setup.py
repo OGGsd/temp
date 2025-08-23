@@ -1,7 +1,7 @@
 """Startup service to initialize subscription-related database schema."""
 
 import asyncio
-from loguru import logger
+from axiestudio.logging import logger
 
 try:
     from axiestudio.services.deps import get_db_service

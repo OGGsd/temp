@@ -5,7 +5,7 @@ from uuid import UUID
 
 from langchain_core.agents import AgentAction, AgentFinish
 from langchain_core.callbacks.base import AsyncCallbackHandler
-from loguru import logger
+from axiestudio.logging import logger
 from typing_extensions import override
 
 from axiestudio.api.v1.schemas import ChatResponse, PromptResponse

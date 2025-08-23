@@ -9,7 +9,7 @@ import json
 from pathlib import Path
 from typing import Dict, List, Any
 from fastapi import APIRouter, HTTPException
-from loguru import logger
+from axiestudio.logging import logger
 
 router = APIRouter(tags=["Showcase"], prefix="/showcase")
 

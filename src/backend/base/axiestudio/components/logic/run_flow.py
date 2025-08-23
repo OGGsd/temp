@@ -1,6 +1,6 @@
 from typing import Any
 
-from loguru import logger
+from axiestudio.logging import logger
 
 from axiestudio.base.tools.run_flow import RunFlowBaseComponent
 from axiestudio.helpers.flow import run_flow

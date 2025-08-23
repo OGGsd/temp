@@ -12,7 +12,7 @@ from typing import Any, ParamSpec, TypeVar
 from urllib.parse import quote, unquote, urlparse
 from uuid import uuid4
 
-from loguru import logger
+from axiestudio.logging import logger
 from mcp import types
 from sqlmodel import select
 

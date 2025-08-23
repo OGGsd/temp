@@ -1,6 +1,6 @@
 from uuid import UUID
 
-from loguru import logger
+from axiestudio.logging import logger
 from sqlmodel import col, delete, select
 from sqlmodel.ext.asyncio.session import AsyncSession
 

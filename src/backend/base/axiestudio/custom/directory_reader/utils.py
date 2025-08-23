@@ -1,6 +1,6 @@
 import asyncio
 
-from loguru import logger
+from axiestudio.logging import logger
 
 from axiestudio.custom.directory_reader.directory_reader import DirectoryReader
 from axiestudio.template.frontend_node.custom_components import CustomComponentFrontendNode

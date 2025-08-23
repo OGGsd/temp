@@ -4,7 +4,7 @@ from typing import TYPE_CHECKING, Any, cast
 
 from astra_assistants.astra_assistants_manager import AssistantManager
 from langchain_core.agents import AgentFinish
-from loguru import logger
+from axiestudio.logging import logger
 
 from axiestudio.base.agents.events import ExceptionWithMessageError, process_agent_events
 from axiestudio.base.astra_assistants.util import (

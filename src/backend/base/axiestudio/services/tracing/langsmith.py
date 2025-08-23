@@ -6,7 +6,7 @@ import types
 from datetime import datetime, timezone
 from typing import TYPE_CHECKING, Any
 
-from loguru import logger
+from axiestudio.logging import logger
 from typing_extensions import override
 
 from axiestudio.schema.data import Data

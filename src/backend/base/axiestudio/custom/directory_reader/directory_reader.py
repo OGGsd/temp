@@ -5,7 +5,7 @@ from pathlib import Path
 
 import anyio
 from aiofile import async_open
-from loguru import logger
+from axiestudio.logging import logger
 
 from axiestudio.custom.custom_component.component import Component
 

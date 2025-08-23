@@ -1,4 +1,4 @@
-from loguru import logger
+from axiestudio.logging import logger
 
 from axiestudio.base.astra_assistants.util import get_patched_openai_client
 from axiestudio.custom.custom_component.component_with_cache import ComponentWithCache

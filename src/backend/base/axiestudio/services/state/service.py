@@ -2,7 +2,7 @@ from collections import defaultdict
 from collections.abc import Callable
 from threading import Lock
 
-from loguru import logger
+from axiestudio.logging import logger
 
 from axiestudio.services.base import Service
 from axiestudio.services.settings.service import SettingsService

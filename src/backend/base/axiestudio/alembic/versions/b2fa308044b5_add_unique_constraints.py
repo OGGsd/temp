@@ -11,7 +11,7 @@ from typing import Sequence, Union
 import sqlalchemy as sa
 import sqlmodel
 from alembic import op
-from loguru import logger  # noqa
+from axiestudio.logging import logger  # noqa
 from sqlalchemy.engine.reflection import Inspector
 
 # revision identifiers, used by Alembic.

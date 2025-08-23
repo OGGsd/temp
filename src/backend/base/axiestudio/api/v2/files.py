@@ -11,7 +11,7 @@ from zoneinfo import ZoneInfo
 
 from fastapi import APIRouter, Depends, File, HTTPException, UploadFile
 from fastapi.responses import StreamingResponse
-from loguru import logger
+from axiestudio.logging import logger
 from sqlmodel import col, select
 
 from axiestudio.api.schemas import UploadFileResponse

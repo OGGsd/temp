@@ -45,7 +45,7 @@ async def create_variable(
         if isinstance(e, HTTPException):
             raise
         # Log the actual error for debugging
-        from loguru import logger
+        from axiestudio.logging import logger
         logger.error(f"Variable creation error: {str(e)}")
         raise HTTPException(status_code=500, detail=f"Failed to create variable: {str(e)}") from e
 
@@ -65,7 +65,7 @@ async def read_variables(
         return await variable_service.get_all(user_id=current_user.id, session=session)
     except Exception as e:
         # Log the actual error for debugging
-        from loguru import logger
+        from axiestudio.logging import logger
         logger.error(f"Variable read error: {str(e)}")
         # If it's a decryption error, return empty list instead of 500
         if "decrypt" in str(e).lower() or "fernet" in str(e).lower():

@@ -2,7 +2,7 @@ import time
 from collections.abc import Callable
 
 import socketio
-from loguru import logger
+from axiestudio.logging import logger
 from sqlmodel import select
 
 from axiestudio.api.utils import format_elapsed_time

@@ -1,4 +1,4 @@
-from loguru import logger
+from axiestudio.logging import logger
 
 from axiestudio.graph.schema import ResultData, RunOutputs
 from axiestudio.schema.data import Data

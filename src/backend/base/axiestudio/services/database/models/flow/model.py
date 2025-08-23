@@ -9,7 +9,7 @@ from uuid import UUID, uuid4
 import emoji
 from emoji import purely_emoji
 from fastapi import HTTPException, status
-from loguru import logger
+from axiestudio.logging import logger
 from pydantic import (
     BaseModel,
     ValidationInfo,

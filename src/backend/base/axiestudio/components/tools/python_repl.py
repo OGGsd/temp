@@ -3,7 +3,7 @@ import importlib
 from langchain.tools import StructuredTool
 from langchain_core.tools import ToolException
 from langchain_experimental.utilities import PythonREPL
-from loguru import logger
+from axiestudio.logging import logger
 from pydantic import BaseModel, Field
 
 from axiestudio.base.langchain_utilities.model import LCToolComponent

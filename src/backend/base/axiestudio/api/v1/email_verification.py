@@ -11,7 +11,7 @@ from axiestudio.services.auth.verification_code import validate_code, create_ver
 
 def ensure_timezone_aware(dt: datetime | None) -> datetime | None:
     """
-        Ensure a datetime is timezone-aware.
+    Ensure a datetime is timezone-aware.
 
     This fixes the common issue where database datetimes are stored as naive
     but need to be compared with timezone-aware datetimes.
@@ -29,28 +29,28 @@ router = APIRouter(prefix="/email", tags=["Email Verification"])
 
 
 class ResendEmailRequest(BaseModel):
-        email: str
+    email: str
 
 
 class ForgotPasswordRequest(BaseModel):
-        email: str
+    email: str
 
 
 class VerifyCodeRequest(BaseModel):
     """Request model for 6-digit code verification"""
-        email: str
-        code: str
+    email: str
+    code: str
 
 
 class ResendCodeRequest(BaseModel):
     """Request model for resending 6-digit code"""
-        email: str
+    email: str
 
 
 class ChangePasswordRequest(BaseModel):
     """Request model for changing password with verification code"""
-        email: str
-        code: str
+    email: str
+    code: str
     new_password: str
 
 
@@ -58,17 +58,17 @@ class ChangePasswordRequest(BaseModel):
 async def verify_email(
     session: DbSession,
     token: str = Query(..., description="Email verification token"),
-    ):
+):
     """
-        EMAIL VERIFICATION ENDPOINT
-        This is called when user clicks "Confirm Email" button in their email.
+    EMAIL VERIFICATION ENDPOINT
+    This is called when user clicks "Confirm Email" button in their email.
     It MUST activate the user account automatically.
     """
-from loguru import logger
+    from axiestudio.logging.logger import logger
 
     if not token:
-    logger.warning("Email verification attempted without token")
-    raise HTTPException(status_code=400, detail="Verification token is required")
+        logger.warning("Email verification attempted without token")
+        raise HTTPException(status_code=400, detail="Verification token is required")
 
     logger.info(f"Email verification attempt with token: {token[:8]}...")
 
@@ -77,122 +77,122 @@ from loguru import logger
     user = (await session.exec(stmt)).first()
 
     if not user:
-    logger.warning(f"Invalid verification token: {token[:8]}...")
-    raise HTTPException(
-        status_code=400,
-    detail="Invalid or expired verification token. If you already verified your email, please try logging in directly."
-    )
+        logger.warning(f"Invalid verification token: {token[:8]}...")
+        raise HTTPException(
+            status_code=400,
+            detail="Invalid or expired verification token. If you already verified your email, please try logging in directly."
+        )
 
     logger.info(f"Found user for verification: {user.username} (email: {user.email})")
 
     # Check if token has expired (with timezone-safe comparison)
     if user.email_verification_expires:
         user_expires = ensure_timezone_aware(user.email_verification_expires)
-    if user_expires and user_expires < datetime.now(timezone.utc):
-    logger.warning(f"Expired verification token for user: {user.username}")
-    raise HTTPException(status_code=400, detail="Verification token has expired")
+        if user_expires and user_expires < datetime.now(timezone.utc):
+            logger.warning(f"Expired verification token for user: {user.username}")
+            raise HTTPException(status_code=400, detail="Verification token has expired")
 
     # Log current state BEFORE verification
     logger.info(f"BEFORE verification - User: {user.username}, is_active: {user.is_active}, email_verified: {user.email_verified}")
 
     try:
         # CRITICAL: This is what happens when user clicks "Confirm Email"
-    logger.info(f"ACTIVATING USER: {user.username}")
+        logger.info(f"ACTIVATING USER: {user.username}")
 
-    # Step 1: Mark email as verified
-    user.email_verified = True
-    logger.info(f"Set email_verified = True for {user.username}")
+        # Step 1: Mark email as verified
+        user.email_verified = True
+        logger.info(f"Set email_verified = True for {user.username}")
 
-    # Step 2: ACTIVATE THE ACCOUNT - THIS IS THE KEY!
-    user.is_active = True
-    logger.info(f"Set is_active = True for {user.username}")
+        # Step 2: ACTIVATE THE ACCOUNT - THIS IS THE KEY!
+        user.is_active = True
+        logger.info(f"Set is_active = True for {user.username}")
 
-    # Step 3: Clear verification tokens
-    user.email_verification_token = None
-    user.email_verification_expires = None
-    logger.info(f"🧹 Cleared verification tokens for {user.username}")
+        # Step 3: Clear verification tokens
+        user.email_verification_token = None
+        user.email_verification_expires = None
+        logger.info(f"🧹 Cleared verification tokens for {user.username}")
 
-    # Step 4: Update timestamp
-    user.updated_at = datetime.now(timezone.utc)
+        # Step 4: Update timestamp
+        user.updated_at = datetime.now(timezone.utc)
 
-    # Step 5: Reset any failed login attempts
-    if hasattr(user, 'failed_login_attempts'):
-    user.failed_login_attempts = 0
-    if hasattr(user, 'locked_until'):
-    user.locked_until = None
+        # Step 5: Reset any failed login attempts
+        if hasattr(user, 'failed_login_attempts'):
+            user.failed_login_attempts = 0
+        if hasattr(user, 'locked_until'):
+            user.locked_until = None
 
         # Step 6: COMMIT TO DATABASE - CRITICAL!
-    logger.info(f"💾 COMMITTING changes to database for {user.username}")
-    await session.commit()
-    await session.refresh(user)
+        logger.info(f"💾 COMMITTING changes to database for {user.username}")
+        await session.commit()
+        await session.refresh(user)
 
-    # Log final state AFTER verification
-    logger.info(f"AFTER verification - User: {user.username}, is_active: {user.is_active}, email_verified: {user.email_verified}")
-    logger.info(f"USER {user.username} SUCCESSFULLY VERIFIED AND ACTIVATED!")
+        # Log final state AFTER verification
+        logger.info(f"AFTER verification - User: {user.username}, is_active: {user.is_active}, email_verified: {user.email_verified}")
+        logger.info(f"USER {user.username} SUCCESSFULLY VERIFIED AND ACTIVATED!")
 
     except Exception as e:
-    logger.error(f"FAILED to verify user {user.username}: {e}")
-    await session.rollback()
-    raise HTTPException(status_code=500, detail=f"Database error during verification: {str(e)}")
+        logger.error(f"FAILED to verify user {user.username}: {e}")
+        await session.rollback()
+        raise HTTPException(status_code=500, detail=f"Database error during verification: {str(e)}")
 
     # Generate access token for automatic login
     try:
-from axiestudio.services.auth.utils import create_user_tokens
+        from axiestudio.services.auth.utils import create_user_tokens
         tokens = await create_user_tokens(user.id, session, update_last_login=True)
-    logger.info(f"Generated access tokens for {user.username}")
+        logger.info(f"Generated access tokens for {user.username}")
 
-    return {
-    "message": "Email verified successfully! Your account is now active and you are logged in.",
-    "verified": True,
-    "activated": True,
-    "access_token": tokens["access_token"],
-    "refresh_token": tokens["refresh_token"],
-    "token_type": "bearer",
-    "user_id": str(user.id),
-    "username": user.username,
-    "email": user.email,
-    "auto_login": True,
-    "can_login": True
-    }
+        return {
+            "message": "Email verified successfully! Your account is now active and you are logged in.",
+            "verified": True,
+            "activated": True,
+            "access_token": tokens["access_token"],
+            "refresh_token": tokens["refresh_token"],
+            "token_type": "bearer",
+            "user_id": str(user.id),
+            "username": user.username,
+            "email": user.email,
+            "auto_login": True,
+            "can_login": True
+        }
 
     except Exception as e:
-    logger.error(f"Failed to generate tokens for {user.username}: {e}")
+        logger.error(f"Failed to generate tokens for {user.username}: {e}")
         # Don't fail verification if token generation fails
-    return {
-    "message": "Email verified successfully! Your account is active. Please log in manually.",
-    "verified": True,
-    "activated": True,
-    "auto_login": False,
-    "username": user.username,
-    "email": user.email,
-    "can_login": True
-    }
+        return {
+            "message": "Email verified successfully! Your account is active. Please log in manually.",
+            "verified": True,
+            "activated": True,
+            "auto_login": False,
+            "username": user.username,
+            "email": user.email,
+            "can_login": True
+        }
 
 
 @router.post("/resend-verification")
 async def resend_verification_email(
     request: ResendEmailRequest,
     session: DbSession,
-    ):
+):
     """Resend verification email."""
-        # Find user by email
+    # Find user by email
     stmt = select(User).where(User.email == request.email)
     user = (await session.exec(stmt)).first()
 
     if not user:
         # ENTERPRISE SECURITY: Prevent email enumeration
         # Always return success to prevent revealing if email exists
-from loguru import logger
-    logger.warning(f"Forgot password attempted for non-existent email: {request.email}")
-    return {
-    "message": "If this email exists in our system, you will receive a password reset link.",
-    "success": True
-    }
+        from axiestudio.logging import logger
+        logger.warning(f"Forgot password attempted for non-existent email: {request.email}")
+        return {
+            "message": "If this email exists in our system, you will receive a password reset link.",
+            "success": True
+        }
 
     if user.email_verified:
-    raise HTTPException(status_code=400, detail="Email is already verified")
+        raise HTTPException(status_code=400, detail="Email is already verified")
 
-        # Generate new verification token
+    # Generate new verification token
     token = email_service.generate_verification_token()
     expiry = email_service.get_verification_expiry()
 
@@ -207,11 +207,11 @@ from loguru import logger
     email_sent = await email_service.send_verification_email(user.email, user.username, token)
 
     if not email_sent:
-    raise HTTPException(status_code=500, detail="Failed to send verification email")
+        raise HTTPException(status_code=500, detail="Failed to send verification email")
 
     return {
-    "message": "Verification email sent successfully",
-    "email": user.email
+        "message": "Verification email sent successfully",
+        "email": user.email
     }
 
 
@@ -220,9 +220,9 @@ async def forgot_password(
     request: ForgotPasswordRequest,
     session: DbSession,
     http_request: Request,
-    ):
+):
     """Send 6-digit password reset code with enterprise security features."""
-from loguru import logger
+    from axiestudio.logging import logger
 
     # Get client IP for security logging
     client_ip = http_request.client.host if http_request.client else "unknown"
@@ -233,39 +233,39 @@ from loguru import logger
 
     # Always return success to prevent email enumeration attacks
     success_response = {
-    "message": "If an account with that email exists, a 6-digit verification code has been sent.",
-    "email": request.email,
-    "security_notice": "For security reasons, we don't confirm whether this email exists in our system."
+        "message": "If an account with that email exists, a 6-digit verification code has been sent.",
+        "email": request.email,
+        "security_notice": "For security reasons, we don't confirm whether this email exists in our system."
     }
 
     if not user:
         # Log suspicious activity for security monitoring
-    logger.warning(f"Password reset attempted for non-existent email: {request.email} from IP: {client_ip}")
-    return success_response
+        logger.warning(f"Password reset attempted for non-existent email: {request.email} from IP: {client_ip}")
+        return success_response
 
     if not user.is_active:
         # Log inactive user reset attempts
-    logger.info(f"Password reset attempted for inactive user: {user.username} from IP: {client_ip}")
-    return success_response
+        logger.info(f"Password reset attempted for inactive user: {user.username} from IP: {client_ip}")
+        return success_response
 
     # Check for recent reset attempts (rate limiting) - with timezone-safe comparison
     if user.email_verification_expires:
         user_expires = ensure_timezone_aware(user.email_verification_expires)
         now = datetime.now(timezone.utc)
-    if user_expires and user_expires > now:
-        time_remaining = user_expires - now
-    if time_remaining.total_seconds() > 23 * 3600: # If less than 1 hour since last request
-    logger.warning(f"Rate limited password reset for user: {user.username} from IP: {client_ip}")
-    return {
-    "message": "A password reset link was recently sent. Please check your email or wait before requesting another.",
-    "email": request.email,
-    "rate_limited": True
-    }
+        if user_expires and user_expires > now:
+            time_remaining = user_expires - now
+            if time_remaining.total_seconds() > 23 * 3600:  # If less than 1 hour since last request
+                logger.warning(f"Rate limited password reset for user: {user.username} from IP: {client_ip}")
+                return {
+                    "message": "A password reset link was recently sent. Please check your email or wait before requesting another.",
+                    "email": request.email,
+                    "rate_limited": True
+                }
 
     # Generate 6-digit password reset code
     from axiestudio.services.auth.verification_code import generate_code
     reset_code = generate_code()
-    reset_expiry = datetime.now(timezone.utc) + timedelta(minutes=10) # 10 minutes
+    reset_expiry = datetime.now(timezone.utc) + timedelta(minutes=10)  # 10 minutes
 
     # Store reset code and security metadata
     user.verification_code = reset_code
@@ -279,15 +279,15 @@ from loguru import logger
 
     # Send password reset code email
     email_sent = await email_service.send_password_reset_code_email(
-    user.email,
-    user.username,
-    reset_code,
-    client_ip=client_ip # Pass IP for security notice in email
+        user.email,
+        user.username,
+        reset_code,
+        client_ip=client_ip  # Pass IP for security notice in email
     )
 
     if not email_sent:
         # Log error but still return success to prevent enumeration
-    logger.error(f"Failed to send password reset email to {user.email} from IP: {client_ip}")
+        logger.error(f"Failed to send password reset email to {user.email} from IP: {client_ip}")
 
     return success_response
 
@@ -296,32 +296,32 @@ from loguru import logger
 async def verify_password_reset_code(
     request: VerifyCodeRequest,
     session: DbSession,
-    ):
+):
     """Verify 6-digit password reset code."""
-        # Find user by email
+    # Find user by email
     stmt = select(User).where(User.email == request.email)
     user = (await session.exec(stmt)).first()
 
     if not user:
-    raise HTTPException(status_code=400, detail="Invalid email or verification code")
+        raise HTTPException(status_code=400, detail="Invalid email or verification code")
 
-        # Check if code exists and hasn't expired
+    # Check if code exists and hasn't expired
     if not user.verification_code or not user.verification_code_expires:
-    raise HTTPException(status_code=400, detail="No password reset code found. Please request a new one.")
+        raise HTTPException(status_code=400, detail="No password reset code found. Please request a new one.")
 
-        # Check if code has expired
+    # Check if code has expired
     if datetime.now(timezone.utc) > user.verification_code_expires:
-    raise HTTPException(status_code=400, detail="Password reset code has expired. Please request a new one.")
+        raise HTTPException(status_code=400, detail="Password reset code has expired. Please request a new one.")
 
-        # Verify the code
+    # Verify the code
     if user.verification_code != request.code:
-    raise HTTPException(status_code=400, detail="Invalid verification code")
+        raise HTTPException(status_code=400, detail="Invalid verification code")
 
-        # Code is valid - return success (don't clear code yet, wait for password change)
+    # Code is valid - return success (don't clear code yet, wait for password change)
     return {
-    "verified": True,
-    "message": "Password reset code verified successfully. You can now set a new password.",
-    "email": request.email
+        "verified": True,
+        "message": "Password reset code verified successfully. You can now set a new password.",
+        "email": request.email
     }
 
 
@@ -329,25 +329,25 @@ async def verify_password_reset_code(
 async def change_password_with_code(
     request: ChangePasswordRequest,
     session: DbSession,
-    ):
+):
     """Change password using verified reset code."""
-        # Find user by email
+    # Find user by email
     stmt = select(User).where(User.email == request.email)
     user = (await session.exec(stmt)).first()
 
     if not user:
-    raise HTTPException(status_code=400, detail="Invalid email or verification code")
+        raise HTTPException(status_code=400, detail="Invalid email or verification code")
 
-        # Verify code again for security
+    # Verify code again for security
     if not user.verification_code or user.verification_code != request.code:
-    raise HTTPException(status_code=400, detail="Invalid verification code")
+        raise HTTPException(status_code=400, detail="Invalid verification code")
 
-        # Check if code has expired
+    # Check if code has expired
     if datetime.now(timezone.utc) > user.verification_code_expires:
-    raise HTTPException(status_code=400, detail="Password reset code has expired. Please request a new one.")
+        raise HTTPException(status_code=400, detail="Password reset code has expired. Please request a new one.")
 
-        # Update password
-from axiestudio.services.auth.utils import get_password_hash
+    # Update password
+    from axiestudio.services.auth.utils import get_password_hash
     user.password = get_password_hash(request.new_password)
     user.updated_at = datetime.now(timezone.utc)
 
@@ -358,8 +358,8 @@ from axiestudio.services.auth.utils import get_password_hash
     await session.commit()
 
     return {
-    "success": True,
-    "message": "Password changed successfully. You can now log in with your new password."
+        "success": True,
+        "message": "Password changed successfully. You can now log in with your new password."
     }
 
 
@@ -367,28 +367,28 @@ from axiestudio.services.auth.utils import get_password_hash
 async def reset_password(
     session: DbSession,
     token: str = Query(..., description="Password reset token"),
-    ):
+):
     """Handle password reset token and log user in automatically."""
     if not token:
-    raise HTTPException(status_code=400, detail="Reset token is required")
+        raise HTTPException(status_code=400, detail="Reset token is required")
 
-        # Find user by reset token (stored in email_verification_token field)
+    # Find user by reset token (stored in email_verification_token field)
     stmt = select(User).where(User.email_verification_token == token)
     user = (await session.exec(stmt)).first()
 
     if not user:
-    raise HTTPException(status_code=400, detail="Invalid or expired reset token")
+        raise HTTPException(status_code=400, detail="Invalid or expired reset token")
 
-        # Check if token has expired (with timezone-safe comparison)
+    # Check if token has expired (with timezone-safe comparison)
     if user.email_verification_expires:
         user_expires = ensure_timezone_aware(user.email_verification_expires)
-    if user_expires and user_expires < datetime.now(timezone.utc):
-    raise HTTPException(status_code=400, detail="Reset token has expired")
+        if user_expires and user_expires < datetime.now(timezone.utc):
+            raise HTTPException(status_code=400, detail="Reset token has expired")
 
-        # Activate the user if they're not active (password reset also serves as email verification)
+    # Activate the user if they're not active (password reset also serves as email verification)
     if not user.is_active:
-    user.is_active = True
-    user.email_verified = True # Mark email as verified since they accessed the reset link
+        user.is_active = True
+        user.email_verified = True  # Mark email as verified since they accessed the reset link
 
     # Clear the reset token
     user.email_verification_token = None
@@ -399,18 +399,18 @@ async def reset_password(
     await session.refresh(user)
 
     # Generate access token for automatic login
-from axiestudio.services.auth.utils import create_user_tokens
+    from axiestudio.services.auth.utils import create_user_tokens
     tokens = await create_user_tokens(user.id, session, update_last_login=True)
 
     return {
-    "message": "Password reset successful! You are now logged in. Please set a new password.",
-    "access_token": tokens["access_token"],
-    "refresh_token": tokens["refresh_token"],
-    "token_type": "bearer",
-    "user_id": str(user.id),
-    "username": user.username,
-    "redirect_to_change_password": True, # ENTERPRISE: Redirect to change password page
-    "redirect_url": "/change-password?from_reset=true"
+        "message": "Password reset successful! You are now logged in. Please set a new password.",
+        "access_token": tokens["access_token"],
+        "refresh_token": tokens["refresh_token"],
+        "token_type": "bearer",
+        "user_id": str(user.id),
+        "username": user.username,
+        "redirect_to_change_password": True,  # ENTERPRISE: Redirect to change password page
+        "redirect_url": "/change-password?from_reset=true"
     }
 
 
@@ -418,34 +418,34 @@ from axiestudio.services.auth.utils import create_user_tokens
 async def check_user_status(
     username: str,
     session: DbSession,
-    ):
+):
     """
-        Check user verification status for debugging.
-        Use this to verify that email verification is working properly.
+    Check user verification status for debugging.
+    Use this to verify that email verification is working properly.
     """
-from loguru import logger
+    from axiestudio.logging import logger
 
     stmt = select(User).where(User.username == username)
     user = (await session.exec(stmt)).first()
 
     if not user:
-    raise HTTPException(status_code=404, detail="User not found")
+        raise HTTPException(status_code=404, detail="User not found")
 
     logger.info(f"User status check for: {username}")
 
     return {
-    "username": user.username,
-    "email": user.email,
-    "is_active": user.is_active,
-    "email_verified": user.email_verified,
-    "has_verification_token": user.email_verification_token is not None,
-    "verification_expires": user.email_verification_expires,
-    "created_at": user.create_at,
-    "updated_at": user.updated_at,
-    "last_login_at": user.last_login_at,
-    "can_login": user.is_active and user.email_verified,
-    "status": "READY TO LOGIN" if (user.is_active and user.email_verified) else "NEEDS VERIFICATION",
-    "next_action": "User can login now" if (user.is_active and user.email_verified) else "User must click email verification link"
+        "username": user.username,
+        "email": user.email,
+        "is_active": user.is_active,
+        "email_verified": user.email_verified,
+        "has_verification_token": user.email_verification_token is not None,
+        "verification_expires": user.email_verification_expires,
+        "created_at": user.create_at,
+        "updated_at": user.updated_at,
+        "last_login_at": user.last_login_at,
+        "can_login": user.is_active and user.email_verified,
+        "status": "READY TO LOGIN" if (user.is_active and user.email_verified) else "NEEDS VERIFICATION",
+        "next_action": "User can login now" if (user.is_active and user.email_verified) else "User must click email verification link"
     }
 
 
@@ -453,21 +453,21 @@ from loguru import logger
 async def verify_code(
     request: VerifyCodeRequest,
     session: DbSession,
-    ):
+):
     """
-        ENTERPRISE 6-DIGIT CODE VERIFICATION ENDPOINT
+    ENTERPRISE 6-DIGIT CODE VERIFICATION ENDPOINT
 
     This is the NEW way users verify their email - by entering a 6-digit code
     instead of clicking a link. This is how Google, Microsoft, AWS, etc. do it.
 
     When user enters the 6-digit code:
-        1. Validates the code format and expiry
-        2. Checks rate limiting (max 5 attempts)
-        3. Activates the user account (is_active = True)
+    1. Validates the code format and expiry
+    2. Checks rate limiting (max 5 attempts)
+    3. Activates the user account (is_active = True)
     4. Marks email as verified (email_verified = True)
     5. Auto-logs the user in
     """
-from loguru import logger
+    from axiestudio.logging import logger
 
     logger.info(f"6-digit code verification attempt for email: {request.email}")
 
@@ -478,133 +478,133 @@ from loguru import logger
     if not user:
         # ENTERPRISE SECURITY: Prevent email enumeration
         # Return generic error without revealing email existence
-    logger.warning(f"Code verification attempted for non-existent email: {request.email}")
-    raise HTTPException(
-    status_code=400,
-    detail="Invalid verification code or email address"
-    )
+        logger.warning(f"Code verification attempted for non-existent email: {request.email}")
+        raise HTTPException(
+            status_code=400,
+            detail="Invalid verification code or email address"
+        )
 
     logger.info(f"Found user for code verification: {user.username}")
 
     # Check if user is already verified
     if user.email_verified and user.is_active:
-    logger.info(f"User {user.username} already verified and active")
-    raise HTTPException(
-        status_code=400,
-    detail={
-    "message": "Email already verified. You can login now.",
-    "verified": True,
-    "can_login": True,
-    "action": "login_now"
-    }
-    )
+        logger.info(f"User {user.username} already verified and active")
+        raise HTTPException(
+            status_code=400,
+            detail={
+                "message": "Email already verified. You can login now.",
+                "verified": True,
+                "can_login": True,
+                "action": "login_now"
+            }
+        )
 
     # Validate the 6-digit code using our enterprise service
     validation_result = validate_code(
-    code=request.code,
-    stored_code=user.verification_code,
-    expiry=user.verification_code_expires,
-    attempts=user.verification_attempts
+        code=request.code,
+        stored_code=user.verification_code,
+        expiry=user.verification_code_expires,
+        attempts=user.verification_attempts
     )
 
     # Handle validation failure
     if not validation_result["valid"]:
         # Increment failed attempts
-    user.verification_attempts += 1
-    await session.commit()
+        user.verification_attempts += 1
+        await session.commit()
 
-    logger.warning(f"Invalid code for {user.username}: {validation_result['error']}")
+        logger.warning(f"Invalid code for {user.username}: {validation_result['error']}")
 
-    raise HTTPException(
-    status_code=400,
-    detail={
-    "message": validation_result["error"],
-    "remaining_attempts": validation_result["remaining_attempts"],
-    "rate_limited": validation_result["rate_limited"],
-    "expired": validation_result["expired"]
-    }
-    )
+        raise HTTPException(
+            status_code=400,
+            detail={
+                "message": validation_result["error"],
+                "remaining_attempts": validation_result["remaining_attempts"],
+                "rate_limited": validation_result["rate_limited"],
+                "expired": validation_result["expired"]
+            }
+        )
 
     # SUCCESS - Activate the user account!
     try:
-    logger.info(f"ACTIVATING USER ACCOUNT: {user.username}")
+        logger.info(f"ACTIVATING USER ACCOUNT: {user.username}")
 
         # Step 1: Mark email as verified
-    user.email_verified = True
-    logger.info(f"Set email_verified = True for {user.username}")
+        user.email_verified = True
+        logger.info(f"Set email_verified = True for {user.username}")
 
-    # Step 2: ACTIVATE THE ACCOUNT - THIS IS THE KEY!
-    user.is_active = True
-    logger.info(f"Set is_active = True for {user.username}")
+        # Step 2: ACTIVATE THE ACCOUNT - THIS IS THE KEY!
+        user.is_active = True
+        logger.info(f"Set is_active = True for {user.username}")
 
-    # Step 3: Clear verification codes and reset attempts
-    user.verification_code = None
-    user.verification_code_expires = None
-    user.verification_attempts = 0
-    logger.info(f"🧹 Cleared verification codes for {user.username}")
+        # Step 3: Clear verification codes and reset attempts
+        user.verification_code = None
+        user.verification_code_expires = None
+        user.verification_attempts = 0
+        logger.info(f"🧹 Cleared verification codes for {user.username}")
 
-    # Step 4: Clear legacy token fields too
-    user.email_verification_token = None
-    user.email_verification_expires = None
+        # Step 4: Clear legacy token fields too
+        user.email_verification_token = None
+        user.email_verification_expires = None
 
-    # Step 5: Update timestamp
-    user.updated_at = datetime.now(timezone.utc)
+        # Step 5: Update timestamp
+        user.updated_at = datetime.now(timezone.utc)
 
-    # Step 6: Reset any failed login attempts
-    if hasattr(user, 'failed_login_attempts'):
-    user.failed_login_attempts = 0
-    if hasattr(user, 'locked_until'):
-    user.locked_until = None
+        # Step 6: Reset any failed login attempts
+        if hasattr(user, 'failed_login_attempts'):
+            user.failed_login_attempts = 0
+        if hasattr(user, 'locked_until'):
+            user.locked_until = None
 
         # Step 7: COMMIT TO DATABASE - CRITICAL!
-    logger.info(f"💾 COMMITTING account activation to database for {user.username}")
-    await session.commit()
-    await session.refresh(user)
+        logger.info(f"💾 COMMITTING account activation to database for {user.username}")
+        await session.commit()
+        await session.refresh(user)
 
-    logger.info(f"USER {user.username} SUCCESSFULLY VERIFIED AND ACTIVATED!")
+        logger.info(f"USER {user.username} SUCCESSFULLY VERIFIED AND ACTIVATED!")
 
     except Exception as e:
-    logger.error(f"FAILED to activate user {user.username}: {e}")
-    await session.rollback()
-    raise HTTPException(
-    status_code=500,
-    detail=f"Database error during account activation: {str(e)}"
-    )
+        logger.error(f"FAILED to activate user {user.username}: {e}")
+        await session.rollback()
+        raise HTTPException(
+            status_code=500,
+            detail=f"Database error during account activation: {str(e)}"
+        )
 
     # Generate access tokens for automatic login
     try:
-from axiestudio.services.auth.utils import create_user_tokens
+        from axiestudio.services.auth.utils import create_user_tokens
         tokens = await create_user_tokens(user.id, session, update_last_login=True)
-    logger.info(f"Generated access tokens for {user.username}")
+        logger.info(f"Generated access tokens for {user.username}")
 
-    return {
-    "message": "Email verified successfully! Your account is now active and you are logged in.",
-    "verified": True,
-    "activated": True,
-    "access_token": tokens["access_token"],
-    "refresh_token": tokens["refresh_token"],
-    "token_type": "bearer",
-    "user_id": str(user.id),
-    "username": user.username,
-    "email": user.email,
-    "auto_login": True,
-    "can_login": True,
-    "redirect_to": "/dashboard"
-    }
+        return {
+            "message": "Email verified successfully! Your account is now active and you are logged in.",
+            "verified": True,
+            "activated": True,
+            "access_token": tokens["access_token"],
+            "refresh_token": tokens["refresh_token"],
+            "token_type": "bearer",
+            "user_id": str(user.id),
+            "username": user.username,
+            "email": user.email,
+            "auto_login": True,
+            "can_login": True,
+            "redirect_to": "/dashboard"
+        }
 
     except Exception as e:
-    logger.error(f"Failed to generate tokens for {user.username}: {e}")
+        logger.error(f"Failed to generate tokens for {user.username}: {e}")
         # Don't fail verification if token generation fails
-    return {
-    "message": "Email verified successfully! Your account is active. Please log in manually.",
-    "verified": True,
-    "activated": True,
-    "auto_login": False,
-    "username": user.username,
-    "email": user.email,
-    "can_login": True,
-    "redirect_to": "/login"
-    }
+        return {
+            "message": "Email verified successfully! Your account is active. Please log in manually.",
+            "verified": True,
+            "activated": True,
+            "auto_login": False,
+            "username": user.username,
+            "email": user.email,
+            "can_login": True,
+            "redirect_to": "/login"
+        }
 
 
 @router.post("/resend-code")
@@ -612,14 +612,14 @@ async def resend_verification_code(
     request: ResendCodeRequest,
     session: DbSession,
     http_request: Request,
-    ):
+):
     """
-        Resend 6-digit verification code
+    Resend 6-digit verification code
 
     Generates a new 6-digit code and sends it via email.
     Resets the attempt counter for security.
     """
-from loguru import logger
+    from axiestudio.logging import logger
 
     logger.info(f"Resend code request for email: {request.email}")
 
@@ -627,12 +627,12 @@ from loguru import logger
     client_ip = http_request.client.host if http_request.client else "unknown"
 
     # Basic rate limiting for resend endpoint (prevent spam)
-from axiestudio.api.v1.subscriptions import check_rate_limit
+    from axiestudio.api.v1.subscriptions import check_rate_limit
     if not check_rate_limit(f"resend_{client_ip}", "resend"):
-    raise HTTPException(
-        status_code=429,
-        detail="Too many resend attempts from this location. Please wait before trying again."
-    )
+        raise HTTPException(
+            status_code=429,
+            detail="Too many resend attempts from this location. Please wait before trying again."
+        )
 
     # Find user by email
     stmt = select(User).where(User.email == request.email)
@@ -641,66 +641,66 @@ from axiestudio.api.v1.subscriptions import check_rate_limit
     if not user:
         # ENTERPRISE SECURITY: Prevent email enumeration
         # Always return success to prevent revealing if email exists
-    logger.warning(f"Resend code requested for non-existent email: {request.email}")
-    return {
-    "message": "If this email exists in our system, a new verification code has been sent.",
-    "success": True
-    }
+        logger.warning(f"Resend code requested for non-existent email: {request.email}")
+        return {
+            "message": "If this email exists in our system, a new verification code has been sent.",
+            "success": True
+        }
 
     # Check if user is already verified
     if user.email_verified and user.is_active:
-    logger.info(f"Resend code requested for already verified user: {user.username}")
-    raise HTTPException(
-        status_code=400,
-    detail={
-    "message": "Email already verified. You can login now.",
-    "verified": True,
-    "can_login": True,
-    "action": "login_now"
-    }
-    )
+        logger.info(f"Resend code requested for already verified user: {user.username}")
+        raise HTTPException(
+            status_code=400,
+            detail={
+                "message": "Email already verified. You can login now.",
+                "verified": True,
+                "can_login": True,
+                "action": "login_now"
+            }
+        )
 
     try:
         # Generate new 6-digit code
         new_code, code_expiry = create_verification()
 
-    # Update user with new code
-    user.verification_code = new_code
-    user.verification_code_expires = code_expiry
-    user.verification_attempts = 0 # Reset attempts
-    user.updated_at = datetime.now(timezone.utc)
+        # Update user with new code
+        user.verification_code = new_code
+        user.verification_code_expires = code_expiry
+        user.verification_attempts = 0  # Reset attempts
+        user.updated_at = datetime.now(timezone.utc)
 
-    await session.commit()
+        await session.commit()
 
-    # Send new verification code email
-    email_sent = await email_service.send_verification_code_email(
-    user.email, user.username, new_code
-    )
+        # Send new verification code email
+        email_sent = await email_service.send_verification_code_email(
+            user.email, user.username, new_code
+        )
 
-    if not email_sent:
-    logger.error(f"Failed to send verification code to {user.email}")
-    raise HTTPException(
-        status_code=500,
-    detail={
-    "message": "Failed to send verification code",
-    "action": "try_again_later"
-    }
-    )
+        if not email_sent:
+            logger.error(f"Failed to send verification code to {user.email}")
+            raise HTTPException(
+                status_code=500,
+                detail={
+                    "message": "Failed to send verification code",
+                    "action": "try_again_later"
+                }
+            )
 
-    logger.info(f"New verification code sent to {user.email}")
+        logger.info(f"New verification code sent to {user.email}")
 
-    return {
-    "message": "New verification code sent successfully!",
-    "email": user.email,
-    "expires_in": "10 minutes",
-    "max_attempts": 5,
-    "check_spam": True
-    }
+        return {
+            "message": "New verification code sent successfully!",
+            "email": user.email,
+            "expires_in": "10 minutes",
+            "max_attempts": 5,
+            "check_spam": True
+        }
 
     except Exception as e:
-    logger.error(f"Error resending verification code to {user.email}: {e}")
-    await session.rollback()
-    raise HTTPException(
-    status_code=500,
-    detail=f"Failed to resend verification code: {str(e)}"
-    )
+        logger.error(f"Error resending verification code to {user.email}: {e}")
+        await session.rollback()
+        raise HTTPException(
+            status_code=500,
+            detail=f"Failed to resend verification code: {str(e)}"
+        )

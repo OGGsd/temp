@@ -2,7 +2,7 @@ from copy import deepcopy
 from pathlib import Path
 
 from langchain_chroma import Chroma
-from loguru import logger
+from axiestudio.logging import logger
 from typing_extensions import override
 
 from axiestudio.base.vectorstores.model import LCVectorStoreComponent, check_cached_vector_store

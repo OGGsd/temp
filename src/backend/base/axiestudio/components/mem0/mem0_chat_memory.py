@@ -1,6 +1,6 @@
 import os
 
-from loguru import logger
+from axiestudio.logging import logger
 from mem0 import Memory, MemoryClient
 
 from axiestudio.base.memory.model import LCChatMemoryComponent

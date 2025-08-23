@@ -5,7 +5,7 @@ from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
 from alembic.util.exc import CommandError
-from loguru import logger
+from axiestudio.logging import logger
 from sqlmodel import text
 from sqlmodel.ext.asyncio.session import AsyncSession
 

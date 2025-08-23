@@ -1,6 +1,6 @@
 from typing import Any
 
-from loguru import logger
+from axiestudio.logging import logger
 
 from axiestudio.base.flow_processing.utils import build_data_from_result_data
 from axiestudio.custom.custom_component.component import Component

@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, Any, cast
 
-from loguru import logger
+from axiestudio.logging import logger
 from pydantic import BaseModel
 
 from axiestudio.graph.vertex.base import Vertex

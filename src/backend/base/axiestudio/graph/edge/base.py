@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, Any, cast
 
-from loguru import logger
+from axiestudio.logging import logger
 
 from axiestudio.graph.edge.schema import EdgeData, LoopTargetHandleDict, SourceHandle, TargetHandle, TargetHandleDict
 from axiestudio.schema.schema import INPUT_FIELD_NAME

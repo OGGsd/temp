@@ -6,7 +6,7 @@ all users are properly verified and activated.
 
 import asyncio
 from datetime import datetime, timezone
-from loguru import logger
+from axiestudio.logging import logger
 
 
 class VerificationScheduler:

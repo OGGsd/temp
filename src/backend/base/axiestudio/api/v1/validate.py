@@ -1,5 +1,5 @@
 from fastapi import APIRouter, HTTPException
-from loguru import logger
+from axiestudio.logging import logger
 
 from axiestudio.api.utils import CurrentActiveUser
 from axiestudio.api.v1.base import Code, CodeValidationResponse, PromptValidationResponse, ValidatePromptRequest

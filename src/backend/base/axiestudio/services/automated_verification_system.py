@@ -35,7 +35,7 @@ async def automated_verification_monitor():
         from axiestudio.services.deps import get_db_service
         from axiestudio.services.database.models.user.model import User
         from sqlmodel import select
-        from loguru import logger
+        from axiestudio.logging import logger
         
         print("🤖 Starting Automated Email Verification Monitor")
         print("=" * 60)

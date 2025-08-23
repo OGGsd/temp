@@ -6,7 +6,7 @@ import warnings
 from typing import TYPE_CHECKING, Any
 
 import orjson
-from loguru import logger
+from axiestudio.logging import logger
 from pydantic import PydanticDeprecatedSince20
 
 from axiestudio.custom.eval import eval_custom_component_code

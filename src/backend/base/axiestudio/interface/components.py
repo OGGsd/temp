@@ -7,7 +7,7 @@ import pkgutil
 from pathlib import Path
 from typing import TYPE_CHECKING, Any
 
-from loguru import logger
+from axiestudio.logging import logger
 
 from axiestudio.custom.utils import abuild_custom_components, create_component_template
 from axiestudio.services.settings.base import BASE_COMPONENTS_PATH

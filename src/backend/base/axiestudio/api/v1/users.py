@@ -145,7 +145,7 @@ async def _create_regular_user(user: UserCreate, request: Request, session: DbSe
 
     if not email_sent:
         # Log warning but don't fail the signup
-        from loguru import logger
+        from axiestudio.logging import logger
         logger.warning(f"Failed to send verification email to {new_user.email}")
 
     # Log successful signup

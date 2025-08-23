@@ -11,7 +11,7 @@ from typing import Any
 from uuid import UUID
 
 from fastapi import HTTPException
-from loguru import logger
+from axiestudio.logging import logger
 from pydantic import BaseModel
 
 from axiestudio.custom.custom_component.component import Component

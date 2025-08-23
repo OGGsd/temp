@@ -1,5 +1,5 @@
 from fastapi import HTTPException
-from loguru import logger
+from axiestudio.logging import logger
 
 from axiestudio.services.deps import get_settings_service
 

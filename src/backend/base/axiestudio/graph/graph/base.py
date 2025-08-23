@@ -15,7 +15,7 @@ from functools import partial
 from itertools import chain
 from typing import TYPE_CHECKING, Any, cast
 
-from loguru import logger
+from axiestudio.logging import logger
 
 from axiestudio.exceptions.component import ComponentBuildError
 from axiestudio.graph.edge.base import CycleEdge, Edge

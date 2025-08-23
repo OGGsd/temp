@@ -4,7 +4,7 @@ import time
 from typing import Generic
 
 from diskcache import Cache
-from loguru import logger
+from axiestudio.logging import logger
 
 from axiestudio.services.cache.base import AsyncBaseCacheService, AsyncLockType
 from axiestudio.services.cache.utils import CACHE_MISS

@@ -3,7 +3,7 @@ import re
 import requests
 from bs4 import BeautifulSoup
 from langchain_community.document_loaders import RecursiveUrlLoader
-from loguru import logger
+from axiestudio.logging import logger
 
 from axiestudio.custom.custom_component.component import Component
 from axiestudio.field_typing.range_spec import RangeSpec

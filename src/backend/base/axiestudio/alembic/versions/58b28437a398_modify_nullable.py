@@ -10,7 +10,7 @@ from typing import Sequence, Union
 
 import sqlalchemy as sa
 from alembic import op
-from loguru import logger
+from axiestudio.logging import logger
 from sqlalchemy.engine.reflection import Inspector
 
 down_revision: Union[str, None] = "4e5980a44eaa"

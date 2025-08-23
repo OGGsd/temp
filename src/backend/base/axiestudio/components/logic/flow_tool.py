@@ -1,6 +1,6 @@
 from typing import Any
 
-from loguru import logger
+from axiestudio.logging import logger
 from typing_extensions import override
 
 from axiestudio.base.langchain_utilities.model import LCToolComponent

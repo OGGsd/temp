@@ -3,7 +3,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, Any
 
 from langchain_core.tools import BaseTool, ToolException
-from loguru import logger
+from axiestudio.logging import logger
 from typing_extensions import override
 
 from axiestudio.base.flow_processing.utils import build_data_from_result_data, format_flow_output_data

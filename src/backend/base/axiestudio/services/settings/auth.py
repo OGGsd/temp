@@ -2,7 +2,7 @@ import secrets
 from pathlib import Path
 from typing import Literal
 
-from loguru import logger
+from axiestudio.logging import logger
 from passlib.context import CryptContext
 from pydantic import Field, SecretStr, field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict

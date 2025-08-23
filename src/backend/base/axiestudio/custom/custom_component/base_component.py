@@ -5,7 +5,7 @@ from typing import TYPE_CHECKING, Any, ClassVar
 
 from cachetools import TTLCache, cachedmethod
 from fastapi import HTTPException
-from loguru import logger
+from axiestudio.logging import logger
 
 from axiestudio.custom.attributes import ATTR_FUNC_MAPPING
 from axiestudio.custom.code_parser.code_parser import CodeParser

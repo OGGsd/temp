@@ -1,5 +1,5 @@
 import httpx
-from loguru import logger
+from axiestudio.logging import logger
 
 from axiestudio.custom import Component
 from axiestudio.io import BoolInput, DropdownInput, MessageTextInput, Output, SecretStrInput

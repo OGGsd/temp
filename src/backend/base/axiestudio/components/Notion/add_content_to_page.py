@@ -4,7 +4,7 @@ from typing import Any
 import requests
 from bs4 import BeautifulSoup
 from langchain.tools import StructuredTool
-from loguru import logger
+from axiestudio.logging import logger
 from markdown import markdown
 from pydantic import BaseModel, Field
 

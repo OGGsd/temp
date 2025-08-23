@@ -1,4 +1,4 @@
-from loguru import logger
+from axiestudio.logging import logger
 
 
 def get_memory_key(langchain_object):

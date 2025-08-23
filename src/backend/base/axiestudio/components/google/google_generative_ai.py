@@ -1,7 +1,7 @@
 from typing import Any
 
 import requests
-from loguru import logger
+from axiestudio.logging import logger
 from pydantic.v1 import SecretStr
 
 from axiestudio.base.models.google_generative_ai_constants import GOOGLE_GENERATIVE_AI_MODELS

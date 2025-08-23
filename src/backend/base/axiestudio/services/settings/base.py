@@ -9,7 +9,7 @@ from typing import Any, Literal
 import orjson
 import yaml
 from aiofile import async_open
-from loguru import logger
+from axiestudio.logging import logger
 from pydantic import Field, field_validator
 from pydantic.fields import FieldInfo
 from pydantic_settings import (

@@ -7,7 +7,7 @@ import os
 from typing import TYPE_CHECKING, Any
 
 import pandas as pd
-from loguru import logger
+from axiestudio.logging import logger
 
 from axiestudio.schema.data import Data
 from axiestudio.services.deps import get_storage_service

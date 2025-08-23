@@ -5,7 +5,7 @@ Provides interface for loading and managing custom components
 """
 
 from typing import Optional, Type, Any
-from loguru import logger
+from axiestudio.logging import logger
 
 from axiestudio.interface.components import get_all_components
 

@@ -11,7 +11,7 @@ import sqlalchemy as sa
 from fastapi import APIRouter, BackgroundTasks, Body, Depends, HTTPException, Request, UploadFile, status
 from fastapi.encoders import jsonable_encoder
 from fastapi.responses import StreamingResponse
-from loguru import logger
+from axiestudio.logging import logger
 from sqlmodel import select
 
 from axiestudio.api.utils import CurrentActiveUser, DbSession, parse_value

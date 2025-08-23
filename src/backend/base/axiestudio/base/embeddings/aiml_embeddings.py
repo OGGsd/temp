@@ -2,7 +2,7 @@ import concurrent.futures
 import json
 
 import httpx
-from loguru import logger
+from axiestudio.logging import logger
 from pydantic import BaseModel, SecretStr
 
 from axiestudio.field_typing import Embeddings

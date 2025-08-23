@@ -8,7 +8,7 @@ import time
 
 from fastapi import APIRouter, Depends, HTTPException, Request, Response
 from pydantic import BaseModel
-from loguru import logger
+from axiestudio.logging import logger
 
 from axiestudio.api.utils import CurrentActiveUser, DbSession
 from axiestudio.services.stripe.service import stripe_service

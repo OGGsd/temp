@@ -4,7 +4,7 @@ import importlib
 import inspect
 from typing import TYPE_CHECKING
 
-from loguru import logger
+from axiestudio.logging import logger
 
 from axiestudio.utils.concurrency import KeyedMemoryLockManager
 

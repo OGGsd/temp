@@ -2,7 +2,7 @@ from typing import Any
 
 from langchain_community.utilities.serpapi import SerpAPIWrapper
 from langchain_core.tools import ToolException
-from loguru import logger
+from axiestudio.logging import logger
 from pydantic import BaseModel, Field
 
 from axiestudio.custom.custom_component.component import Component

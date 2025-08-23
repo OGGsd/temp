@@ -11,7 +11,7 @@ from cryptography.fernet import Fernet
 from fastapi import Depends, HTTPException, Security, WebSocketException, status
 from fastapi.security import APIKeyHeader, APIKeyQuery, OAuth2PasswordBearer
 from jose import JWTError, jwt
-from loguru import logger
+from axiestudio.logging import logger
 from sqlalchemy.exc import IntegrityError
 from sqlmodel.ext.asyncio.session import AsyncSession
 from starlette.websockets import WebSocket
@@ -421,7 +421,7 @@ async def create_refresh_token(refresh_token: str, db: AsyncSession):
 
 async def authenticate_user(username: str, password: str, db: AsyncSession, client_ip: str = "unknown") -> User | None:
     """Enhanced authentication with enterprise security features."""
-    from loguru import logger
+    from axiestudio.logging import logger
 
     user = await get_user_by_username(db, username)
 

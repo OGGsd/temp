@@ -4,7 +4,7 @@ import asyncio
 from datetime import datetime, timezone, timedelta
 from typing import List
 
-from loguru import logger
+from axiestudio.logging import logger
 from sqlmodel import select
 from sqlmodel.ext.asyncio.session import AsyncSession
 

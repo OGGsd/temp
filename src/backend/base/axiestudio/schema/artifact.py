@@ -2,7 +2,7 @@ from collections.abc import Generator
 from enum import Enum
 
 from fastapi.encoders import jsonable_encoder
-from loguru import logger
+from axiestudio.logging import logger
 from pydantic import BaseModel
 
 from axiestudio.schema.data import Data

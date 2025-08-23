@@ -4,7 +4,7 @@ import os
 from datetime import datetime, timezone
 from typing import TYPE_CHECKING
 
-from loguru import logger
+from axiestudio.logging import logger
 from sqlmodel import select
 from typing_extensions import override
 

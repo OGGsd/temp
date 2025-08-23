@@ -3,7 +3,7 @@ from typing import Any
 
 import requests
 from langchain_ibm import ChatWatsonx
-from loguru import logger
+from axiestudio.logging import logger
 from pydantic.v1 import SecretStr
 
 from axiestudio.base.models.model import LCModelComponent

@@ -4,7 +4,7 @@ from typing import Any
 
 from langchain.agents import Tool
 from langchain_core.tools import StructuredTool
-from loguru import logger
+from axiestudio.logging import logger
 from pydantic.v1 import Field, create_model
 from pydantic.v1.fields import Undefined
 from typing_extensions import override

@@ -8,7 +8,7 @@ from collections.abc import AsyncIterator, Callable, Iterator, Mapping
 from enum import Enum
 from typing import TYPE_CHECKING, Any
 
-from loguru import logger
+from axiestudio.logging import logger
 
 from axiestudio.exceptions.component import ComponentBuildError
 from axiestudio.graph.schema import INPUT_COMPONENTS, OUTPUT_COMPONENTS, InterfaceComponentTypes, ResultData

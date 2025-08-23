@@ -4,7 +4,7 @@ from typing import List
 from uuid import UUID
 
 from fastapi import APIRouter, Depends, HTTPException, status
-from loguru import logger
+from axiestudio.logging import logger
 from pydantic import BaseModel
 from sqlalchemy.ext.asyncio import AsyncSession
 

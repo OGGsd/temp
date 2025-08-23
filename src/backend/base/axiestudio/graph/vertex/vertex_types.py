@@ -7,7 +7,7 @@ from typing import TYPE_CHECKING, Any, cast
 
 import yaml
 from langchain_core.messages import AIMessage, AIMessageChunk
-from loguru import logger
+from axiestudio.logging import logger
 
 from axiestudio.graph.schema import CHAT_COMPONENTS, RECORDS_COMPONENTS, InterfaceComponentTypes, ResultData
 from axiestudio.graph.utils import UnbuiltObject, log_vertex_build, rewrite_file_path

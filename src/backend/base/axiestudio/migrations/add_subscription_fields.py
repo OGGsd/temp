@@ -4,7 +4,7 @@ import asyncio
 from datetime import datetime, timezone, timedelta
 
 from sqlalchemy import text
-from loguru import logger
+from axiestudio.logging import logger
 
 from axiestudio.services.deps import get_db_service
 

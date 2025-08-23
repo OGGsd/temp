@@ -7,7 +7,7 @@ from datetime import datetime, timezone
 from typing import TYPE_CHECKING
 
 import httpx
-from loguru import logger
+from axiestudio.logging import logger
 
 from axiestudio.services.base import Service
 from axiestudio.services.telemetry.opentelemetry import OpenTelemetry

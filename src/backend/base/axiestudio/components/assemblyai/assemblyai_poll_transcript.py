@@ -1,5 +1,5 @@
 import assemblyai as aai
-from loguru import logger
+from axiestudio.logging import logger
 
 from axiestudio.custom.custom_component.component import Component
 from axiestudio.field_typing.range_spec import RangeSpec

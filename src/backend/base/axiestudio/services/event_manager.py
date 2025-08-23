@@ -10,7 +10,7 @@ from dataclasses import dataclass
 from datetime import datetime
 from enum import Enum
 
-from loguru import logger
+from axiestudio.logging import logger
 
 
 class EventType(Enum):

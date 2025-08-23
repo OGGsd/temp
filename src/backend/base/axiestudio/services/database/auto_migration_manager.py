@@ -6,7 +6,7 @@ Handles automatic database schema updates and table creation
 import asyncio
 from datetime import datetime, timezone
 from typing import Dict, List, Any
-from loguru import logger
+from axiestudio.logging import logger
 from sqlalchemy import text, inspect
 from sqlmodel import select
 

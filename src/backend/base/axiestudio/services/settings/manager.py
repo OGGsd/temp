@@ -3,7 +3,7 @@ from __future__ import annotations
 from pathlib import Path
 
 import yaml
-from loguru import logger
+from axiestudio.logging import logger
 
 from axiestudio.services.base import Service
 from axiestudio.services.settings.auth import AuthSettings

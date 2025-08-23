@@ -1,7 +1,7 @@
 from typing import Any
 
 import socketio
-from loguru import logger
+from axiestudio.logging import logger
 
 from axiestudio.services.base import Service
 from axiestudio.services.cache.base import AsyncBaseCacheService, CacheService

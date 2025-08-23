@@ -6,7 +6,7 @@ from typing import TYPE_CHECKING, Any
 from uuid import UUID
 
 import pandas as pd
-from loguru import logger
+from axiestudio.logging import logger
 
 from axiestudio.interface.utils import extract_input_variables_from_prompt
 from axiestudio.schema.data import Data

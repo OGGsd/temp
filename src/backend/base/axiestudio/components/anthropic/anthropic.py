@@ -1,7 +1,7 @@
 from typing import Any, cast
 
 import requests
-from loguru import logger
+from axiestudio.logging import logger
 from pydantic import ValidationError
 
 from axiestudio.base.models.anthropic_constants import (

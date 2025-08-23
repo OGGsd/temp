@@ -10,7 +10,7 @@ from typing import Sequence, Union
 
 import sqlalchemy as sa
 from alembic import op
-from loguru import logger
+from axiestudio.logging import logger
 from sqlalchemy.dialects import postgresql
 from sqlalchemy.engine.reflection import Inspector
 

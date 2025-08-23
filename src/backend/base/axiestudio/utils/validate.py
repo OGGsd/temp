@@ -6,7 +6,7 @@ from types import FunctionType
 from typing import Optional, Union
 
 from langchain_core._api.deprecation import LangChainDeprecationWarning
-from loguru import logger
+from axiestudio.logging import logger
 from pydantic import ValidationError
 
 from axiestudio.field_typing.constants import CUSTOM_COMPONENT_SUPPORTED_TYPES, DEFAULT_IMPORT_STRING

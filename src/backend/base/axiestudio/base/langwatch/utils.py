@@ -2,7 +2,7 @@ from functools import lru_cache
 from typing import Any
 
 import httpx
-from loguru import logger
+from axiestudio.logging import logger
 
 
 @lru_cache(maxsize=1)

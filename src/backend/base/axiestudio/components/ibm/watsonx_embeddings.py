@@ -4,7 +4,7 @@ import requests
 from ibm_watsonx_ai import APIClient, Credentials
 from ibm_watsonx_ai.metanames import EmbedTextParamsMetaNames
 from langchain_ibm import WatsonxEmbeddings
-from loguru import logger
+from axiestudio.logging import logger
 from pydantic.v1 import SecretStr
 
 from axiestudio.base.embeddings.model import LCEmbeddingsModel

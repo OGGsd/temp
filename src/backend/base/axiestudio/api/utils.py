@@ -8,7 +8,7 @@ from typing import TYPE_CHECKING, Annotated, Any
 
 from fastapi import Depends, HTTPException, Query
 from fastapi_pagination import Params
-from loguru import logger
+from axiestudio.logging import logger
 from sqlalchemy import delete
 from sqlmodel.ext.asyncio.session import AsyncSession
 

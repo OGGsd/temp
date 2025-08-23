@@ -4,7 +4,7 @@ from pathlib import Path
 from uuid import UUID, uuid4
 
 from aiofile import async_open
-from loguru import logger
+from axiestudio.logging import logger
 from sqlmodel import delete, select, text
 
 from axiestudio.api.utils import cascade_delete_flow

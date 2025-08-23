@@ -3,7 +3,7 @@
 from fastapi import HTTPException, Request, Response, status
 from fastapi.responses import JSONResponse
 from starlette.middleware.base import BaseHTTPMiddleware
-from loguru import logger
+from axiestudio.logging import logger
 
 from axiestudio.services.trial.service import trial_service
 from axiestudio.services.auth.utils import get_current_user_by_jwt

@@ -10,7 +10,7 @@ from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from typing import Dict, Any
 
-from loguru import logger
+from axiestudio.logging import logger
 
 from axiestudio.services.settings.email import EmailSettings
 from axiestudio.services.deps import get_settings_service

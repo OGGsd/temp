@@ -6,7 +6,7 @@ users are properly activated after email verification.
 
 from fastapi import Request, Response
 from starlette.middleware.base import BaseHTTPMiddleware
-from loguru import logger
+from axiestudio.logging import logger
 from datetime import datetime, timezone
 
 

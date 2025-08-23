@@ -7,7 +7,7 @@ from string import Formatter
 
 import yaml
 from langchain_core.language_models import BaseLanguageModel
-from loguru import logger
+from axiestudio.logging import logger
 from PIL.Image import Image
 
 from axiestudio.services.chat.config import ChatConfig

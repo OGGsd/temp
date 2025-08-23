@@ -11,7 +11,7 @@ except ImportError:
     STRIPE_AVAILABLE = False
     stripe = None
 
-from loguru import logger
+from axiestudio.logging import logger
 
 from axiestudio.services.database.models.user.model import User, UserUpdate
 from axiestudio.services.database.models.user.crud import update_user

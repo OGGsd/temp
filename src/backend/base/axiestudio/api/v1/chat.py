@@ -16,7 +16,7 @@ from fastapi import (
     status,
 )
 from fastapi.responses import StreamingResponse
-from loguru import logger
+from axiestudio.logging import logger
 
 from axiestudio.api.build import (
     cancel_flow_build,

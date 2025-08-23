@@ -3,7 +3,7 @@ import inspect
 from typing import TYPE_CHECKING, get_type_hints
 
 from cachetools import LRUCache, cached
-from loguru import logger
+from axiestudio.logging import logger
 
 from axiestudio.services.schema import ServiceType
 
