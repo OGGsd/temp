@@ -29,7 +29,7 @@ const initialValue: AuthContextType = {
 
 export const AuthContext = createContext<AuthContextType>(initialValue);
 
-export function AuthProvider({ children }): React.ReactElement {
+export function AuthProvider({ children }: { children: React.ReactNode }): React.ReactElement {
   const cookies = new Cookies();
   const [accessToken, setAccessToken] = useState<string | null>(
     getAuthCookie(cookies, AXIESTUDIO_ACCESS_TOKEN) ?? null,

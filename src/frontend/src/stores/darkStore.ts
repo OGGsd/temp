@@ -1,10 +1,11 @@
 import { create } from "zustand";
 import type { DarkStoreType } from "../types/zustand/dark";
 
-const startedStars = Number(window.localStorage.getItem("githubStars")) ?? 0;
+const startedStars = typeof window !== "undefined" ? Number(window.localStorage.getItem("githubStars")) ?? 0 : 0;
 
 export const useDarkStore = create<DarkStoreType>((set, get) => ({
   dark: (() => {
+    if (typeof window === "undefined") return false;
     const stored = window.localStorage.getItem("isDark");
     return stored !== null ? JSON.parse(stored) : false;
   })(),
@@ -16,14 +17,18 @@ export const useDarkStore = create<DarkStoreType>((set, get) => ({
   },
   setDark: (dark) => {
     set(() => ({ dark: dark }));
-    window.localStorage.setItem("isDark", dark.toString());
+    if (typeof window !== "undefined") {
+      window.localStorage.setItem("isDark", dark.toString());
+    }
   },
   refreshVersion: (v) => {
     set(() => ({ version: v }));
   },
   refreshStars: () => {
     // Disabled GitHub API calls for Axie Studio
-    window.localStorage.setItem("githubStars", "0");
+    if (typeof window !== "undefined") {
+      window.localStorage.setItem("githubStars", "0");
+    }
     set(() => ({ stars: 0, lastUpdated: new Date() }));
   },
   discordCount: 0,
