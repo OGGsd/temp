@@ -127,7 +127,7 @@ const config = {
         sitemap: {
           // https://docusaurus.io/docs/api/plugins/@docusaurus/plugin-sitemap
           // https://developers.google.com/search/docs/crawling-indexing/sitemaps/build-sitemap
-          lastmod: "datetime",
+          lastmod: null,
           changefreq: null,
           priority: null,
           ignorePatterns: ["/preferences"],

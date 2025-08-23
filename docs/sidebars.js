@@ -470,7 +470,7 @@ module.exports = {
         },
         {
           type: "doc",
-          id: "Support/luna-for-Axie-Studio",
+          id: "Support/luna-for-langflow",
           label: "Enterprise support",
         },
       ],
