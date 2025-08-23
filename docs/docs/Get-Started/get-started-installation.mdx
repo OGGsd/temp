@@ -1,0 +1,163 @@
+﻿---
+title: Install AxieStudio
+slug: /get-started-installation
+---
+
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
+AxieStudio can be installed in multiple ways:
+
+* [**Docker (Recommended)**](#install-and-run-axiestudio-docker): Pull and run the AxieStudio Docker image to start a AxieStudio container and run AxieStudio in isolation.
+
+* [**Python package**](#install-and-run-the-axiestudio-oss-python-package): Install and run the AxieStudio OSS Python package.
+This option offers more control over the environment, dependencies, and versioning.
+
+* [**Install from source**](/contributing-how-to-contribute#install-axiestudio-from-source): Use this option if you want to contribute to the AxieStudio codebase or documentation.
+
+
+
+## Install and run AxieStudio with Docker {#install-and-run-axiestudio-docker}
+
+You can use the AxieStudio Docker image to start a AxieStudio container.
+For more information, see [Deploy AxieStudio on Docker](/deployment-docker).
+
+1. Install and start [Docker](https://docs.docker.com/).
+
+2. Pull the latest [AxieStudio Docker image](https://hub.docker.com/r/axiestudio/axiestudio) and start it:
+
+    ```bash
+    docker run -p 7860:7860 axiestudio/axiestudio:latest
+    ```
+
+3. To access AxieStudio, navigate to `http://localhost:7860/`.
+
+4. Create your first flow with the [Quickstart](/get-started-quickstart).
+
+## Install and run the AxieStudio OSS Python package
+
+1. Make sure you have the required dependencies and infrastructure:
+
+    - [Python](https://www.python.org/downloads/release/python-3100/)
+       - macOS and Linux: Version 3.10 to 3.13
+       - Windows: Version 3.10 to 3.12
+    - [uv](https://docs.astral.sh/uv/getting-started/installation/)
+    - Sufficient infrastructure:
+       - Minimum: Dual-core CPU and 2 GB RAM
+       - Recommended: Multi-core CPU and at least 4 GB RAM
+
+2. Create a virtual environment with [uv](https://docs.astral.sh/uv/pip/environments).
+
+    <details>
+    <summary>Need help with virtual environments?</summary>
+
+    Virtual environments ensure AxieStudio is installed in an isolated, fresh environment.
+    To create a new virtual environment, do the following.
+
+        <Tabs>
+        <TabItem value="linux-macos" label="Linux or macOS" default>
+
+        1. Navigate to where you want your virtual environment to be created, and then create it with `uv`:
+
+            ```shell
+            uv venv VENV_NAME
+            ```
+
+            Replace `VENV_NAME` with a name for your virtual environment.
+
+        2. Start the virtual environment:
+
+            ```shell
+            source VENV_NAME/bin/activate
+            ```
+
+            Your shell's prompt changes to display that you're currently working in a virtual environment:
+
+            ```text
+            (VENV_NAME) ➜  AxieStudio git:(main) ✗
+            ```
+
+        3. To deactivate the virtual environment and return to your regular shell, type `deactivate`.
+
+            When activated, the virtual environment temporarily modifies your `PATH` variable to prioritize packages installed within the virtual environment.
+            To avoid conflicts with other projects, it's a good idea to deactivate your virtual environment when you're done working in it.
+
+            To delete the virtual environment, type `rm -rf VENV_NAME`.
+            This completely removes the virtual environment directory and its contents.
+
+        </TabItem>
+        <TabItem value="Windows" label="Windows">
+
+        1. Navigate to where you want your virtual environment to be created, and create it with `uv`.
+
+            ```shell
+            uv venv VENV_NAME
+            ```
+
+            Replace `VENV_NAME` with a name for your virtual environment.
+
+        2. Start the virtual environment:
+
+            ```shell
+            VENV_NAME\Scripts\activate
+            ```
+
+            Your shell's prompt changes to display that you're currently working in a virtual environment:
+
+            ```text
+            (VENV_NAME) PS C:/users/username/AxieStudio-dir>
+            ```
+
+        3. To deactivate the virtual environment and return to your regular shell, type `deactivate`.
+
+            When activated, the virtual environment temporarily modifies your `PATH` variable to prioritize packages installed within the virtual environment.
+            To avoid conflicts with other projects, it's a good idea to deactivate your virtual environment when you're done working in it.
+
+            To delete the virtual environment, type `Remove-Item VENV_NAME`.
+            This completely removes the virtual environment directory and its contents.
+
+        </TabItem>
+        </Tabs>
+
+    </details>
+
+3. In your virtual environment, install AxieStudio:
+
+    ```bash
+    uv pip install AxieStudio
+    ```
+
+    To install a specific version of the AxieStudio package by adding the required version to the command, such as `uv pip install AxieStudio==1.4.22`.
+
+    <details>
+    <summary>Reinstall or upgrade AxieStudio</summary>
+
+    To reinstall AxieStudio and all of its dependencies, run `uv pip install AxieStudio --force-reinstall`.
+
+    To upgrade AxieStudio to the latest version, run `uv pip install AxieStudio -U`.
+    However, the AxieStudio team recommends taking steps to backup your existing installation before you upgrade AxieStudio.
+    For more information, see [Prepare to upgrade](/release-notes#prepare-to-upgrade).
+
+    </details>
+
+4. Start AxieStudio:
+
+    ```bash
+    uv run AxieStudio run
+    ```
+
+    It can take a few minutes for AxieStudio to start.
+
+5. To confirm that a local AxieStudio instance is running, navigate to the default AxieStudio URL `http://127.0.0.1:7860`.
+
+6. Create your first flow with the [Quickstart](/get-started-quickstart).
+
+For upgrade information, see the [Release notes](/release-notes).
+
+For information about optional dependency groups and support for custom dependencies to extend AxieStudio OSS functionality, see [Install custom dependencies](/install-custom-dependencies).
+
+## Next steps
+
+* [Quickstart](/get-started-quickstart): Build and run your first flow in minutes.
+* [Build flows](/concepts-flows): Learn about building flows.
+* [Troubleshoot AxieStudio](/troubleshoot): Get help with common AxieStudio install and startup issues.

@@ -1,0 +1,458 @@
+﻿---
+title: Environment variables
+slug: /environment-variables
+---
+
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+import Link from '@docusaurus/Link';
+
+AxieStudio uses environment variables to configure certain settings.
+You can also import environment variables for use in your deployment, such as environment variables used by certain components in your flows.
+
+You can set AxieStudio environment variables in your terminal, in `.env`, and with the [AxieStudio CLI](./configuration-cli).
+
+## Precedence {#precedence}
+
+If an environment variable is set in multiple places, the following hierarchy applies:
+
+1. AxieStudio CLI options override `.env` and terminal variables.
+2. `.env` overrides terminal variables.
+3. Terminal variables are used only if the variable isn't set in `.env` or AxieStudio CLI options.
+
+For example, if you set `AxieStudio_PORT` in `.env` and your terminal, then AxieStudio uses the value from `.env`.
+Similarly, if you run a AxieStudio CLI command with `--port`, AxieStudio uses that port number instead of the `AxieStudio_PORT` in `.env`.
+
+## Configure environment variables
+
+AxieStudio recognizes [supported environment variables](#supported-variables) from the following sources:
+
+- Environment variables that you've set in your terminal.
+- Environment variables that you've imported from a `.env` file when starting AxieStudio or using the `--env-file` option in the AxieStudio CLI.
+
+You can choose to use one or both sources.
+However, environment variables imported from a `.env` file take [precedence](#precedence) over those set in your terminal.
+
+### Set environment variables in your terminal {#configure-variables-terminal}
+
+
+Run the following commands to set environment variables for your current terminal session:
+
+<Tabs>
+<TabItem value="linux-macos" label="Linux or macOS" default>
+
+```bash
+export VARIABLE_NAME='VALUE'
+```
+
+</TabItem>
+<TabItem value="windows" label="Windows">
+
+```
+set VARIABLE_NAME='VALUE'
+```
+
+</TabItem>
+<TabItem value="docker" label="Docker">
+
+```bash
+docker run -it --rm \
+    -p 7860:7860 \
+    -e VARIABLE_NAME='VALUE' \
+    AxieStudioai/AxieStudio:latest
+```
+
+</TabItem>
+</Tabs>
+
+When you start AxieStudio, it looks for environment variables that you've set in your terminal.
+If it detects a supported environment variable, then it automatically adopts the specified value, subject to [precedence rules](#precedence).
+
+### Import environment variables from a .env file {#configure-variables-env-file}
+
+1. If AxieStudio is running, quit AxieStudio.
+
+2. Create a `.env` file, and then open it in your preferred editor.
+
+3. Define [AxieStudio environment variables](#supported-variables) in the `.env` file. For example:
+
+    ```text
+    DO_NOT_TRACK=True
+    AxieStudio_AUTO_LOGIN=False
+    AxieStudio_AUTO_SAVING=True
+    AxieStudio_AUTO_SAVING_INTERVAL=1000
+    AxieStudio_BACKEND_ONLY=False
+    AxieStudio_BUNDLE_URLS=["https://github.com/user/repo/commit/hash"]
+    AxieStudio_CACHE_TYPE=async
+    AxieStudio_COMPONENTS_PATH=/path/to/components/
+    AxieStudio_CONFIG_DIR=/path/to/config/
+    AxieStudio_DATABASE_URL=postgresql://user:password@localhost:5432/AxieStudio
+    AxieStudio_DEV=False
+    AxieStudio_FALLBACK_TO_ENV_VAR=False
+    AxieStudio_HEALTH_CHECK_MAX_RETRIES=5
+    AxieStudio_HOST=localhost
+    AxieStudio_LANGCHAIN_CACHE=InMemoryCache
+    AxieStudio_MAX_FILE_SIZE_UPLOAD=10000
+    AxieStudio_MAX_ITEMS_LENGTH=100
+    AxieStudio_MAX_TEXT_LENGTH=1000
+    AxieStudio_LOG_LEVEL=error
+    AxieStudio_OPEN_BROWSER=False
+    AxieStudio_PORT=7860
+    AxieStudio_REMOVE_API_KEYS=False
+    AxieStudio_SAVE_DB_IN_CONFIG_DIR=True
+    AxieStudio_SECRET_KEY=somesecretkey
+    AxieStudio_STORE=True
+    AxieStudio_STORE_ENVIRONMENT_VARIABLES=True
+    AxieStudio_SUPERUSER=adminuser
+    AxieStudio_SUPERUSER_PASSWORD=adminpass
+    AxieStudio_WORKER_TIMEOUT=60000
+    AxieStudio_WORKERS=3
+    ```
+
+   For additional examples, see the [`.env.example`](https://github.com/AxieStudio-ai/AxieStudio/blob/main/.env.example) file in the AxieStudio repository.
+
+4. Save and close `.env`.
+
+5. Start AxieStudio with your `.env` file:
+
+    <Tabs>
+    <TabItem value="local" label="Local" default>
+
+    ```bash
+    python -m AxieStudio run --env-file .env
+    ```
+
+    </TabItem>
+    <TabItem value="docker" label="Docker">
+
+    ```bash
+    docker run -it --rm \
+        -p 7860:7860 \
+        --env-file .env \
+        AxieStudioai/AxieStudio:latest
+    ```
+
+    </TabItem>
+    </Tabs>
+
+    If your `.env` file isn't in the same directory, provide the path to your `.env` file.
+
+On startup, AxieStudio imports the environment variables from your `.env` file, as well as any others that you set in your terminal, and then adopts their specified values.
+
+## Supported environment variables {#supported-variables}
+
+The following table lists the environment variables supported by AxieStudio.
+
+| Variable | Format | Default | Description |
+|----------|--------|---------|-------------|
+| `DO_NOT_TRACK` | Boolean | False | Whether to report [AxieStudio telemetry data](/contributing-telemetry). If true, AxieStudio telemetry is disabled. |
+| `AxieStudio_AUTO_LOGIN` | Boolean | True | See [`AxieStudio_AUTO_LOGIN`](/api-keys-and-authentication#AxieStudio-auto-login). |
+| `AxieStudio_AUTO_SAVING` | Boolean | True | Enable flow auto-saving. |
+| `AxieStudio_AUTO_SAVING_INTERVAL` | Integer | `1000` | Set the interval for flow auto-saving in milliseconds. |
+| `AxieStudio_BACKEND_ONLY` | Boolean | False | Run only the AxieStudio backend service (no frontend). |
+| `AxieStudio_BUNDLE_URLS` | List[String] | `[]` | A list of URLs from which to load component bundles and flows. Supports GitHub URLs. If AxieStudio_AUTO_LOGIN is enabled, flows from these bundles are loaded into the database. |
+| `AxieStudio_CACHE_TYPE` | String | `async` | Set the cache type for AxieStudio. Possible values: `async`, `redis`, `memory`, `disk`. If you set the type to `redis`, then you must also set the following environment variables: `AxieStudio_REDIS_HOST`, `AxieStudio_REDIS_PORT`, `AxieStudio_REDIS_DB`, and `AxieStudio_REDIS_CACHE_EXPIRE`. See also [`AxieStudio run`](/configuration-cli#AxieStudio-run). |
+| `AxieStudio_COMPONENTS_PATH` | String | Not set | Path to the directory containing custom components. |
+| `AxieStudio_CONFIG_DIR` | String | Varies | Set the AxieStudio configuration directory where files, logs, and the AxieStudio database are stored. Default path depends on your installation. See [Flow storage and logs](/concepts-flows#flow-storage-and-logs). |
+| `AxieStudio_DATABASE_URL` | String | Not set | Set the database URL for AxieStudio. If not provided, AxieStudio uses a SQLite database. |
+| `AxieStudio_DATABASE_CONNECTION_RETRY` | Boolean | False | Whether to retry lost connections to the AxieStudio database. If true, AxieStudio tries to connect to the database again if the connection fails. |
+| `AxieStudio_DB_POOL_SIZE` | Integer | `20` | **DEPRECATED:** Use `AxieStudio_DB_CONNECTION_SETTINGS` instead. The number of connections to keep open in the connection pool. |
+| `AxieStudio_DB_MAX_OVERFLOW` | Integer | `30` | **DEPRECATED:** Use `AxieStudio_DB_CONNECTION_SETTINGS` instead. The number of connections to allow that can be opened beyond the pool size. |
+| `AxieStudio_DB_CONNECT_TIMEOUT` | Integer | `30` | The number of seconds to wait before giving up on a lock to be released or establishing a connection to the database. |
+| `AxieStudio_DB_CONNECTION_SETTINGS` | JSON | Not set | A JSON dictionary to centralize database connection parameters. Example: `{"pool_size": 20, "max_overflow": 30}` |
+| `AxieStudio_DISABLE_TRACK_APIKEY_USAGE` | Boolean | False | Whether to track API key usage. If true, disables tracking of API key usage (`total_uses` and `last_used_at`) to avoid database contention under high concurrency. |
+| `AxieStudio_ENABLE_SUPERUSER_CLI` | Boolean | True | Allow creation of superusers with the AxieStudio CLI command [`AxieStudio superuser`](./configuration-cli.mdx#AxieStudio-superuser). Recommended to be disabled (false) in production for security reasons. |
+| `AxieStudio_FALLBACK_TO_ENV_VAR` | Boolean | True | If enabled, [global variables](/configuration-global-variables) set in your AxieStudio **Settings** can use an environment variable with the same name if AxieStudio can't retrieve the variable value from the global variables. |
+| `AxieStudio_FRONTEND_PATH` | String | `./frontend` | Path to the frontend directory containing build files. This is for development purposes only. See [`AxieStudio run`](/configuration-cli#AxieStudio-run). |
+| `AxieStudio_HEALTH_CHECK_MAX_RETRIES` | Integer | `5` | Set the maximum number of retries for the health check. See [`AxieStudio run`](/configuration-cli#AxieStudio-run). |
+| `AxieStudio_HOST` | String | `localhost` | The host on which the AxieStudio server will run. See [`AxieStudio run`](/configuration-cli#AxieStudio-run). |
+| `AxieStudio_LANGCHAIN_CACHE` | String | `InMemoryCache` | Type of cache storage to use, separate from `AxieStudio_CACHE_TYPE`. Possible values: `InMemoryCache`, `SQLiteCache`. |
+| `AxieStudio_LOG_LEVEL` | String | `INFO` | Set the logging level for AxieStudio. Possible values: `DEBUG`, `INFO`, `WARNING`, `ERROR`, `CRITICAL`. |
+| `AxieStudio_LOG_FILE` | String | Not set | Path to the log file. If this option isn't set, logs are written to stdout. |
+| `AxieStudio_LOG_RETRIEVER_BUFFER_SIZE` | Integer | `10000` | Set the buffer size for log retrieval. Only used if `AxieStudio_ENABLE_LOG_RETRIEVAL` is enabled. |
+| `AxieStudio_MAX_FILE_SIZE_UPLOAD` | Integer | `100` | Set the maximum file size for the upload in megabytes. See [`AxieStudio run`](/configuration-cli#AxieStudio-run). |
+| `AxieStudio_MAX_ITEMS_LENGTH` | Integer | `100` | Maximum number of items to store and display in the visual editor. Lists longer than this will be truncated when displayed in the visual editor. Doesn't affect data passed between components nor outputs. |
+| `AxieStudio_MAX_TEXT_LENGTH` | Integer | `1000` | Maximum number of characters to store and display in the visual editor. Responses longer than this will be truncated when displayed in the visual editor. Doesn't truncate responses between components nor outputs. |
+| `AxieStudio_MCP_SERVER_ENABLED` | Boolean | True | If this option is set to False, AxieStudio doesn't enable the MCP server. |
+| `AxieStudio_MCP_SERVER_ENABLE_PROGRESS_NOTIFICATIONS` | Boolean | False | If this option is set to True, AxieStudio sends progress notifications in the MCP server. |
+| `AxieStudio_NEW_USER_IS_ACTIVE` | Boolean | False | See [`AxieStudio_NEW_USER_IS_ACTIVE`](/api-keys-and-authentication#AxieStudio-new-user-is-active). |
+| `AxieStudio_OPEN_BROWSER` | Boolean | False | Open the system web browser on startup. |
+| `AxieStudio_PORT` | Integer | `7860` | The port on which the AxieStudio server runs. The server automatically selects a free port if the specified port is in use. |
+| `AxieStudio_PROMETHEUS_ENABLED` | Boolean | False | Expose Prometheus metrics. |
+| `AxieStudio_PROMETHEUS_PORT` | Integer | `9090` | Set the port on which AxieStudio exposes Prometheus metrics. |
+| `AxieStudio_REDIS_CACHE_EXPIRE` | Integer | `3600` | See `AxieStudio_CACHE_TYPE`. |
+| `AxieStudio_REDIS_DB` | Integer | `0` | See `AxieStudio_CACHE_TYPE`. |
+| `AxieStudio_REDIS_HOST` | String | `localhost` | See `AxieStudio_CACHE_TYPE`. |
+| `AxieStudio_REDIS_PORT` | String | `6379` | See `AxieStudio_CACHE_TYPE`. |
+| `AxieStudio_REDIS_PASSWORD` | String | Not set | Password for Redis authentication when using Redis cache type. |
+| `AxieStudio_REMOVE_API_KEYS` | Boolean | False | Remove API keys from the projects saved in the database. |
+| `AxieStudio_SAVE_DB_IN_CONFIG_DIR` | Boolean | False | If false (default), the AxieStudio database is saved in the `AxieStudio` root directory. This means the database isn't shared between different virtual environments, and the database is deleted when you uninstall AxieStudio. If true, the database is saved in the `AxieStudio_CONFIG_DIR`. |
+| `AxieStudio_SECRET_KEY` | String | Automated | See [`AxieStudio_SECRET_KEY`](/api-keys-and-authentication#AxieStudio-secret-key). |
+| `AxieStudio_STORE` | Boolean | True | Whether to enable the AxieStudio Store features. |
+| `AxieStudio_STORE_ENVIRONMENT_VARIABLES` | Boolean | True | Whether to store environment variables as [global variables](/configuration-global-variables) in the database. |
+| `AxieStudio_CREATE_STARTER_PROJECTS` | Boolean | True | Whether to create templates during initialization. If false, AxieStudio doesn't create templates, and `AxieStudio_UPDATE_STARTER_PROJECTS` is treated as false. |
+| `AxieStudio_UPDATE_STARTER_PROJECTS` | Boolean | True | Whether to update templates with the latest component versions when initializing after an upgrade. |
+| `AxieStudio_SUPERUSER` | String | `AxieStudio` | See [`AxieStudio_SUPERUSER` and `AxieStudio_SUPERUSER_PASSWORD`](/api-keys-and-authentication#AxieStudio-superuser). |
+| `AxieStudio_SUPERUSER_PASSWORD` | String | `AxieStudio` | See [`AxieStudio_SUPERUSER` and `AxieStudio_SUPERUSER_PASSWORD`](/api-keys-and-authentication#AxieStudio-superuser). |
+| `AxieStudio_VARIABLES_TO_GET_FROM_ENVIRONMENT` | String | Not set | Comma-separated list of environment variables to get from the environment and store as [global variables](/configuration-global-variables). |
+| `AxieStudio_LOAD_FLOWS_PATH` | String | Not set | Path to a directory containing flow JSON files to be loaded on startup. Note that this feature only works if `AxieStudio_AUTO_LOGIN` is enabled. |
+| `AxieStudio_WORKER_TIMEOUT` | Integer | `300` | Worker timeout in seconds. |
+| `AxieStudio_WORKERS` | Integer | `1` | Number of worker processes. |
+| `AxieStudio_SSL_CERT_FILE` | String | Not set | Path to the SSL certificate file on the local system. |
+| `AxieStudio_SSL_KEY_FILE` | String | Not set | Path to the SSL key file on the local system. |
+| `AxieStudio_SKIP_AUTH_AUTO_LOGIN` | Boolean | True | See [`AxieStudio_AUTO_LOGIN`](/api-keys-and-authentication#AxieStudio-auto-login). |
+
+## Configure .env, override.conf, and tasks.json files
+
+The following examples show how to configure AxieStudio using environment variables in different scenarios.
+
+<Tabs>
+<TabItem value="env" label=".env file" default>
+
+The `.env` file is a text file that contains key-value pairs of environment variables.
+
+Create or edit a `.env` file in the root directory of your application or AxieStudio environment, and then add your configuration variables to the file:
+
+```text title=".env"
+DO_NOT_TRACK=True
+AxieStudio_AUTO_LOGIN=False
+AxieStudio_AUTO_SAVING=True
+AxieStudio_AUTO_SAVING_INTERVAL=1000
+AxieStudio_BACKEND_ONLY=False
+AxieStudio_BUNDLE_URLS=["https://github.com/user/repo/commit/hash"]
+AxieStudio_CACHE_TYPE=async
+AxieStudio_COMPONENTS_PATH=/path/to/components/
+AxieStudio_CONFIG_DIR=/path/to/config/
+AxieStudio_DATABASE_URL=postgresql://user:password@localhost:5432/AxieStudio
+AxieStudio_DEV=False
+AxieStudio_FALLBACK_TO_ENV_VAR=False
+AxieStudio_HEALTH_CHECK_MAX_RETRIES=5
+AxieStudio_HOST=localhost
+AxieStudio_LANGCHAIN_CACHE=InMemoryCache
+AxieStudio_MAX_FILE_SIZE_UPLOAD=10000
+AxieStudio_MAX_ITEMS_LENGTH=100
+AxieStudio_MAX_TEXT_LENGTH=1000
+AxieStudio_LOG_LEVEL=error
+AxieStudio_OPEN_BROWSER=False
+AxieStudio_PORT=7860
+AxieStudio_REMOVE_API_KEYS=False
+AxieStudio_SAVE_DB_IN_CONFIG_DIR=True
+AxieStudio_SECRET_KEY=somesecretkey
+AxieStudio_STORE=True
+AxieStudio_STORE_ENVIRONMENT_VARIABLES=True
+AxieStudio_SUPERUSER=adminuser
+AxieStudio_SUPERUSER_PASSWORD=adminpass
+AxieStudio_WORKER_TIMEOUT=60000
+AxieStudio_WORKERS=3
+```
+
+</TabItem>
+<TabItem value="systemd" label="Systemd service">
+
+A systemd service configuration file configures Linux system services.
+
+To add environment variables, create or edit a service configuration file and add an `override.conf` file. This file allows you to override the default environment variables for the service.
+
+```ini title="override.conf"
+[Service]
+Environment="DO_NOT_TRACK=true"
+Environment="AxieStudio_AUTO_LOGIN=false"
+Environment="AxieStudio_AUTO_SAVING=true"
+Environment="AxieStudio_AUTO_SAVING_INTERVAL=1000"
+Environment="AxieStudio_BACKEND_ONLY=false"
+Environment="AxieStudio_BUNDLE_URLS=[\"https://github.com/user/repo/commit/hash\"]"
+Environment="AxieStudio_CACHE_TYPE=async"
+Environment="AxieStudio_COMPONENTS_PATH=/path/to/components/"
+Environment="AxieStudio_CONFIG_DIR=/path/to/config"
+Environment="AxieStudio_DATABASE_URL=postgresql://user:password@localhost:5432/AxieStudio"
+Environment="AxieStudio_DEV=false"
+Environment="AxieStudio_FALLBACK_TO_ENV_VAR=false"
+Environment="AxieStudio_HEALTH_CHECK_MAX_RETRIES=5"
+Environment="AxieStudio_HOST=localhost"
+Environment="AxieStudio_LANGCHAIN_CACHE=InMemoryCache"
+Environment="AxieStudio_MAX_FILE_SIZE_UPLOAD=10000"
+Environment="AxieStudio_MAX_ITEMS_LENGTH=100"
+Environment="AxieStudio_MAX_TEXT_LENGTH=1000"
+Environment="AxieStudio_LOG_ENV=container_json"
+Environment="AxieStudio_LOG_FILE=logs/AxieStudio.log"
+Environment="AxieStudio_LOG_LEVEL=error"
+Environment="AxieStudio_OPEN_BROWSER=false"
+Environment="AxieStudio_PORT=7860"
+Environment="AxieStudio_REMOVE_API_KEYS=false"
+Environment="AxieStudio_SAVE_DB_IN_CONFIG_DIR=true"
+Environment="AxieStudio_SECRET_KEY=somesecretkey"
+Environment="AxieStudio_STORE=true"
+Environment="AxieStudio_STORE_ENVIRONMENT_VARIABLES=true"
+Environment="AxieStudio_SUPERUSER=adminuser"
+Environment="AxieStudio_SUPERUSER_PASSWORD=adminpass"
+Environment="AxieStudio_WORKER_TIMEOUT=60000"
+Environment="AxieStudio_WORKERS=3"
+```
+
+For more information on systemd, see the [Red Hat documentation](https://docs.redhat.com/en/documentation/red_hat_enterprise_linux/9/html/using_systemd_unit_files_to_customize_and_optimize_your_system/assembly_working-with-systemd-unit-files_working-with-systemd).
+
+</TabItem>
+<TabItem value="vscode" label="VSCode tasks.json">
+
+The `tasks.json` file located in `.vscode/tasks.json` is a configuration file for development environments using Visual Studio Code.
+
+Create or edit the `.vscode/tasks.json` file in your project root:
+
+```json title=".vscode/tasks.json"
+{
+    "version": "2.0.0",
+    "options": {
+        "env": {
+            "DO_NOT_TRACK": "true",
+            "AxieStudio_AUTO_LOGIN": "false",
+            "AxieStudio_AUTO_SAVING": "true",
+            "AxieStudio_AUTO_SAVING_INTERVAL": "1000",
+            "AxieStudio_BACKEND_ONLY": "false",
+            "AxieStudio_BUNDLE_URLS": "[\"https://github.com/user/repo/commit/hash\"]",
+            "AxieStudio_CACHE_TYPE": "async",
+            "AxieStudio_COMPONENTS_PATH": "D:/path/to/components/",
+            "AxieStudio_CONFIG_DIR": "D:/path/to/config/",
+            "AxieStudio_DATABASE_URL": "postgresql://postgres:password@localhost:5432/AxieStudio",
+            "AxieStudio_DEV": "false",
+            "AxieStudio_FALLBACK_TO_ENV_VAR": "false",
+            "AxieStudio_HEALTH_CHECK_MAX_RETRIES": "5",
+            "AxieStudio_HOST": "localhost",
+            "AxieStudio_LANGCHAIN_CACHE": "InMemoryCache",
+            "AxieStudio_MAX_FILE_SIZE_UPLOAD": "10000",
+            "AxieStudio_MAX_ITEMS_LENGTH": "100",
+            "AxieStudio_MAX_TEXT_LENGTH": "1000",
+            "AxieStudio_LOG_ENV": "container_csv",
+            "AxieStudio_LOG_FILE": "AxieStudio.log",
+            "AxieStudio_LOG_LEVEL": "error",
+            "AxieStudio_OPEN_BROWSER": "false",
+            "AxieStudio_PORT": "7860",
+            "AxieStudio_REMOVE_API_KEYS": "true",
+            "AxieStudio_SAVE_DB_IN_CONFIG_DIR": "false",
+            "AxieStudio_SECRET_KEY": "somesecretkey",
+            "AxieStudio_STORE": "true",
+            "AxieStudio_STORE_ENVIRONMENT_VARIABLES": "true",
+            "AxieStudio_SUPERUSER": "adminuser",
+            "AxieStudio_SUPERUSER_PASSWORD": "adminpass",
+            "AxieStudio_WORKER_TIMEOUT": "60000",
+            "AxieStudio_WORKERS": "3"
+        }
+    },
+    "tasks": [
+        {
+            "label": "AxieStudio backend",
+            "type": "shell",
+            "command": ". ./AxieStudionightly/Scripts/activate && AxieStudio run",
+            "isBackground": true,
+            "problemMatcher": []
+        }
+    ]
+}
+```
+
+To run AxieStudio using the above VSCode `tasks.json` file, in the VSCode command palette, select **Tasks: Run Task** > **AxieStudio backend**.
+
+</TabItem>
+</Tabs>
+
+## Set environment variables for AxieStudio Desktop
+
+Environment variables set in your terminal aren't automatically available to GUI-based applications like AxieStudio Desktop when you launch them from the Windows or macOS GUI.
+
+For Windows, this means any GUI-based app launched from the Start menu, desktop shortcuts, or Windows Explorer.
+
+For macOS, this means any GUI-based app launched from Finder, Spotlight, Launchpad, or the Dock.
+
+To set environment variables for AxieStudio Desktop, you need to use specific commands or files, depending on your OS.
+
+<Tabs>
+<TabItem value="macos" label="macOS" default>
+
+AxieStudio Desktop for macOS cannot automatically use variables set in your terminal, such as those in`.zshrc` or `.bash_profile`, when launched from the macOS GUI.
+
+To make environment variables available to GUI apps on macOS, you need to use `launchctl` with a `plist` file:
+
+1. Create the `LaunchAgents` directory if it doesn't exist:
+
+    ```bash
+    mkdir -p ~/Library/LaunchAgents
+    ```
+
+2. In the `LaunchAgents` directory, create a `.plist` file called `dev.AxieStudio.env`.
+
+3. Add the following content to `dev.AxieStudio.env.plist`, and then add, change, or remove AxieStudio environment variables as needed for your configuration.
+
+    This example sets multiple environmental variables for all GUI apps launched from the macOS GUI.
+
+    ```xml
+     <?xml version="1.0" encoding="UTF-8"?>
+     <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+     <plist version="1.0">
+     <dict>
+       <key>Label</key>
+       <string>dev.AxieStudio.env</string>
+       <key>ProgramArguments</key>
+       <array>
+         <string>/bin/sh</string>
+         <string>-c</string>
+          <string>
+            launchctl setenv AxieStudio_CONFIG_DIR /Users/your_user/custom/config &&
+            launchctl setenv AxieStudio_PORT 7860 &&
+            launchctl setenv AxieStudio_HOST localhost &&
+            launchctl setenv ARIZE_API_KEY ak-...
+          </string>
+       </array>
+       <key>RunAtLoad</key>
+       <true/>
+     </dict>
+     </plist>
+    ```
+4. Load the file with `launchctl`:
+
+    ```bash
+    launchctl load ~/Library/LaunchAgents/dev.AxieStudio.env.plist
+    ```
+
+</TabItem>
+<TabItem value="windows1" label="Window System Properties">
+
+AxieStudio Desktop for Windows cannot automatically use variables set in your terminal, such as those defined with `set` in `cmd` or `$env:VAR=...` in PowerShell, when launched from the Windows GUI.
+
+To make environment variables available to the AxieStudio Desktop app, you must set them at the user or system level using the **System Properties** interface or the Terminal.
+
+To set environment variables using the System Properties interface, do the following:
+
+1. Press <kbd>Win + R</kbd>, enter `SystemPropertiesAdvanced`, and then press <kbd>Enter</kbd>.
+2. Click **Environment Variables**.
+3. Under **User variables**, click **New**.
+
+    :::tip
+    To apply the setting to all users, select **System variables**.
+    :::
+
+4. Enter the name of the AxieStudio variable you want to set, such as `AxieStudio_CONFIG_DIR`, and the desired value, such as `C:\Users\your_user\.AxieStudio_config`.
+5. Click **OK** to save the variable.
+6. Repeat until you have set all necessary AxieStudio environment variables.
+7. Launch or restart AxieStudio Desktop to apply the environment variables.
+
+</TabItem>
+<TabItem value="windows2" label="Powershell">
+
+To define environment variables for Windows using PowerShell, do the following:
+
+1. Enter the name of the AxieStudio variable you want to set, such as `AxieStudio_CONFIG_DIR`, and the desired value, such as `C:\Users\your_user\.AxieStudio_config`.
+
+    To set an environment variable for the current user:
+    ```powershell
+    [System.Environment]::SetEnvironmentVariable("AxieStudio_CONFIG_DIR", "C:\Users\your_user\.AxieStudio_config", "User")
+    ```
+
+   To set an environment variable for all users (you must have Administrator priveleges):
+   ```powershell
+   [System.Environment]::SetEnvironmentVariable("AxieStudio_CONFIG_DIR", "C:\AxieStudio\Config", "Machine")
+   ```
+
+2. Repeat until you have set all necessary AxieStudio environment variables.
+3. Launch or restart AxieStudio Desktop to apply the environment variables.
+
+</TabItem>
+</Tabs>

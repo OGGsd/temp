@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="120" height="40" viewBox="0 0 120 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- AxieStudio Logo for Dark Theme -->
+  <rect width="120" height="40" fill="transparent"/>
+  
+  <!-- Logo Icon -->
+  <circle cx="20" cy="20" r="12" fill="#60a5fa"/>
+  <circle cx="20" cy="20" r="8" fill="#1f2937"/>
+  <circle cx="20" cy="20" r="4" fill="#60a5fa"/>
+  
+  <!-- Text -->
+  <text x="40" y="16" font-family="Arial, sans-serif" font-size="12" font-weight="bold" fill="#ffffff">
+    AxieStudio
+  </text>
+  <text x="40" y="28" font-family="Arial, sans-serif" font-size="8" fill="#d1d5db">
+    Documentation
+  </text>
+</svg>

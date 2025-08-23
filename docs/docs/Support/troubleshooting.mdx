@@ -1,0 +1,195 @@
+﻿---
+title: Troubleshoot AxieStudio
+slug: /troubleshoot
+---
+
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
+This page provides troubleshooting advice for issues you might encounter when using AxieStudio or contributing to AxieStudio.
+
+## Missing components
+
+As AxieStudio development continues, components are often recategorized or deprecated for better alignment or to prepare for new components.
+
+If a component appears to be missing from the expected location on the **Components** menu, try the following:
+
+* Search for the component or check other component categories, including [bundles](/components-bundle-components).
+* [Expose legacy components](/concepts-components#component-menus), which are hidden by default.
+* Check the [Changelog](https://github.com/axiestudio/axiestudio/releases/latest) for component changes in recent releases.
+* Make sure the component isn't already present in your flow if it is a single-use component.
+
+If you still cannot locate the component, see [AxieStudio GitHub Issues and Discussions](/contributing-github-issues).
+
+## No input in the Playground
+
+If there is no message input field in the **Playground**, make sure your flow has a [**Chat Input** component](/components-io#chat-io) that is connected, directly or indirectly, to the **Input** port of a **Language Model** or **Agent** component.
+
+Because the **Playground** is designed for flows that use an LLM in a query-and-response format, such as chatbots and agents, a flow must have **Chat Input**, **Language Model**/**Agent**, and **Chat Output** components to be fully supported by the **Playground** chat interface.
+
+For more information, see [Test flows in the Playground](/concepts-playground).
+
+## Missing key, no key found, or invalid API key
+
+If you get an API key error when running a flow, try the following:
+
+* For all components that require credentials, make sure those components have a valid credential in the component's settings, such as the **API Key** field.
+* If you store your credentials in [AxieStudio global variables](/configuration-global-variables), make sure you selected the correct global variable and that the variable contains a valid credential.
+* Make sure the provided credentials are active, have the required permissions, and, if applicable, have sufficient funds in the account to execute the required action. For example, model providers require credits to use their LLMs.
+
+## AxieStudio installation issues
+
+The following issues can occur when installing AxieStudio.
+
+### AxieStudio installation freezes at pip dependency resolution
+
+Installing AxieStudio OSS with `pip install AxieStudio` slowly fails with this error message:
+
+```text
+pip is looking at multiple versions of <<library>> to determine which version is compatible with other requirements. This could take a while.
+```
+
+To work around this issue, install AxieStudio with `uv` instead of `pip`, as explained in [Install and run the AxieStudio OSS Python package](/get-started-installation#install-and-run-the-AxieStudio-oss-python-package).
+
+### Linux installation fails to build required package
+
+When you try to install AxieStudio OSS on Linux, installation fails because of outdated or missing packages:
+
+```bash
+Resolved 455 packages in 18.92s
+  × Failed to build `webrtcvad==2.0.10`
+  ├─▶ The build backend returned an error
+  ╰─▶ Call to `setuptools.build_meta:__legacy__.build_wheel` failed (exit status: 1)
+```
+
+To resolve this error, install the required build dependencies, and then retry the AxieStudio installation:
+
+```bash
+sudo apt-get update
+sudo apt-get install build-essential python3-dev
+```
+
+If upgrading your packages doesn't fix the issue, install `gcc` separately, and then retry the AxieStudio installation:
+
+```bash
+sudo apt-get install gcc
+```
+
+### Installation failure from `webrtcvad` package
+
+If you experience an error from the `webrtcvad` package, run `uv pip install webrtcvad-wheels` in your virtual environment, and then retry the AxieStudio installation.
+
+
+
+## AxieStudio startup issues
+
+The following issues can occur when attempting to start AxieStudio.
+
+### No `AxieStudio.__main__` module
+
+When you try to run AxieStudio with the command `AxieStudio run`, you encounter the following error:
+
+```bash
+> No module named 'AxieStudio.__main__'
+```
+
+To resolve this issue, try the following:
+
+1. Run `uv run AxieStudio run` instead of `AxieStudio run`.
+2. If that doesn't work, reinstall the latest AxieStudio version with `uv pip install AxieStudio -U`.
+3. If that doesn't work, reinstall AxieStudio and its dependencies with `uv pip install AxieStudio --pre -U --force-reinstall`.
+
+### AxieStudio runTraceback
+
+When you try to run AxieStudio using the command `AxieStudio run`, you encounter the following error:
+
+```bash
+> AxieStudio runTraceback (most recent call last): File ".../AxieStudio", line 5, in <module>  from AxieStudio.__main__ import mainModuleNotFoundError: No module named 'AxieStudio.__main__'
+```
+
+There are two possible reasons for this error:
+
+* **Multiple AxieStudio installations**: You installed AxieStudio using `pip install AxieStudio` but you already had a previous version of AxieStudio installed in your system. In this case, you might be running the wrong executable.
+
+    To solve this issue, run the correct executable by running `python -m AxieStudio run` instead of `AxieStudio run`.
+
+    If that doesn't work, try uninstalling and reinstalling AxieStudio with `uv pip install AxieStudio --pre -U`.
+
+* **Version conflict during installation**: Some version conflicts might have occurred during the installation process. To resolve this issue, reinstall AxieStudio and its dependencies by running `python -m pip install AxieStudio --pre -U --force-reinstall`.
+
+
+
+### Package is not installed
+
+In AxieStudio OSS, you can follow the error message's instructions to install the missing dependency.
+
+
+
+## AxieStudio upgrade issues
+
+The following issues can occur when upgrading your AxieStudio version.
+
+For information about managing AxieStudio versions, see [Install AxieStudio](/get-started-installation).
+
+### Something went wrong running migrations
+
+The following error can occur during AxieStudio upgrades when the new version can't override `AxieStudio-pre.db` in the AxieStudio cache folder:
+
+```bash
+> Something went wrong running migrations. Please, run 'AxieStudio migration --fix'
+```
+
+To resolve this error, clear the cache by deleting the contents of your AxieStudio cache folder.
+The filepath depends on your operating system, installation type, and configuration options.
+For more information and default filepaths, see [Memory management options](/memory).
+
+:::important
+Clearing the cache erases your settings.
+If you want to retain your settings files, create a backup of those files before clearing the cache folder.
+:::
+
+## AxieStudio uninstall issues
+
+The following issues can occur when uninstalling AxieStudio.
+
+
+
+## MCP server issues
+
+- [Use MCP Inspector to test and debug flows](/mcp-server#test-and-debug-flows)
+- [Troubleshooting MCP server](/mcp-server#troubleshooting-mcp-server)
+
+## Custom components and integrations issues
+
+For troubleshooting advice for a third-party integration, see the information about that integration in the AxieStudio documentation and the provider's documentation.
+
+If you are building a custom component, see [Error handling and logging for custom Python components](/components-custom-components#error-handling-and-logging).
+
+### Custom components not appearing in the visual editor
+
+If your custom components are not appearing in the AxieStudio visual editor, try the following troubleshooting steps:
+
+1. Ensure your components follow the [required directory structure](https://docs.AxieStudio.org/components-custom-components#directory-structure-requirements).
+    ```
+    /your/custom/components/path/       # Base directory set by AxieStudio_COMPONENTS_PATH
+        └── category_name/              # Required category subfolder that determines menu name
+            ├── __init__.py             # Required
+            └── custom_component.py     # Component file
+    ```
+
+2. Verify each category directory includes an `__init__.py` file.
+This is required for Python to recognize the directory as a module.
+
+3. Use the command line argument instead of the environment variable for `AxieStudio_COMPONENTS_PATH`.
+If you're using the `AxieStudio_COMPONENTS_PATH` environment variable and components aren't loading, try the `--components-path` command line argument instead:
+
+    ```bash
+    uv run AxieStudio run --components-path /path/to/your/custom/components
+    ```
+
+If you continue to experience issues, please [report them on GitHub](https://github.com/axiestudio/axiestudio/issues) with details about your directory structure and component setup.
+
+## See also
+
+- [AxieStudio GitHub Issues and Discussions](/contributing-github-issues)
+- [AxieStudio telemetry](/contributing-telemetry)
