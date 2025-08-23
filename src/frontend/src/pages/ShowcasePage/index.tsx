@@ -11,9 +11,14 @@ import { Label } from "../../components/ui/label";
 import { Separator } from "../../components/ui/separator";
 import IconComponent from "../../components/common/genericIconComponent";
 import ShadTooltip from "../../components/common/shadTooltipComponent";
+import FlowPreviewDialog from "../../components/showcase/FlowPreviewDialog";
 import { cn } from "../../utils/utils";
 import { api } from "../../controllers/API";
 import useAlertStore from "../../stores/alertStore";
+import { usePostAddFlow } from "../../controllers/API/queries/flows/use-post-add-flow";
+import { useFolderStore } from "../../stores/foldersStore";
+import { FlowType } from "../../types/flow";
+import { useGetFavoriteItemIds, useToggleFavorite } from "../../controllers/API/queries/favorites/use-favorites";
 
 interface StoreItem {
   id: string;
@@ -58,7 +63,9 @@ export default function ShowcasePage(): JSX.Element {
   const navigate = useNavigate();
   const setSuccessData = useAlertStore((state) => state.setSuccessData);
   const setErrorData = useAlertStore((state) => state.setErrorData);
-  
+  const myCollectionId = useFolderStore((state) => state.myCollectionId);
+  const addFlowMutation = usePostAddFlow();
+
   const [storeData, setStoreData] = useState<StoreData | null>(null);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
@@ -70,6 +77,17 @@ export default function ShowcasePage(): JSX.Element {
   const [showPrivateOnly, setShowPrivateOnly] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage] = useState(24); // Show 24 items per page for better performance
+  const [previewItem, setPreviewItem] = useState<StoreItem | null>(null);
+  const [isPreviewOpen, setIsPreviewOpen] = useState(false);
+  const [grabbingItems, setGrabbingItems] = useState<Set<string>>(new Set());
+  const [typeFilter, setTypeFilter] = useState("all");
+  const [showFavoritesOnly, setShowFavoritesOnly] = useState(false);
+  const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
+
+  // Database-backed favorites
+  const { data: favoriteItemIds = [], isLoading: favoritesLoading } = useGetFavoriteItemIds();
+  const toggleFavoriteMutation = useToggleFavorite();
+  const favorites = new Set(favoriteItemIds);
 
   useEffect(() => {
     loadStoreData();
@@ -117,6 +135,81 @@ export default function ShowcasePage(): JSX.Element {
       setLoading(false);
     }
   };
+
+  // Enhanced functionality functions
+  const toggleFavorite = async (itemId: string) => {
+    const item = [...(storeData?.flows || []), ...(storeData?.components || [])].find(i => i.id === itemId);
+    if (!item) return;
+
+    try {
+      const result = await toggleFavoriteMutation.mutateAsync({
+        item_id: itemId,
+        item_type: item.type,
+        item_name: item.name,
+        item_description: item.description,
+        item_author: item.author?.username || item.author?.full_name,
+      });
+
+      setSuccessData({ title: result.message });
+    } catch (error) {
+      console.error('Failed to toggle favorite:', error);
+      setErrorData({
+        title: "Failed to update favorites",
+        list: ["Please try again later."]
+      });
+    }
+  };
+
+  const openPreview = (item: StoreItem) => {
+    setPreviewItem(item);
+    setIsPreviewOpen(true);
+  };
+
+  const grabFlow = async (item: StoreItem) => {
+    if (grabbingItems.has(item.id)) return;
+
+    setGrabbingItems(prev => new Set(prev).add(item.id));
+
+    try {
+      // Simulate loading flow data from the store
+      const flowData = {
+        name: `${item.name} (Grabbed)`,
+        description: item.description,
+        data: { nodes: [], edges: [], viewport: { zoom: 1, x: 0, y: 0 } }, // Placeholder data
+        folder_id: myCollectionId || "",
+        is_component: item.type === "COMPONENT",
+        endpoint_name: undefined,
+        icon: undefined,
+        gradient: undefined,
+        tags: undefined,
+        mcp_enabled: undefined
+      };
+
+      await addFlowMutation.mutateAsync(flowData);
+
+      setSuccessData({
+        title: `Flow grabbed successfully! "${item.name}" has been added to your workspace`
+      });
+
+      // Navigate to the new flow
+      setTimeout(() => navigate('/'), 1000);
+
+    } catch (error) {
+      console.error('Failed to grab flow:', error);
+      setErrorData({
+        title: "Failed to grab flow",
+        list: ["Please try again later."]
+      });
+    } finally {
+      setGrabbingItems(prev => {
+        const newSet = new Set(prev);
+        newSet.delete(item.id);
+        return newSet;
+      });
+    }
+  };
+
+  // No need for localStorage loading - using database-backed favorites
 
   // Sanitize filename to match how files were saved
   const sanitizeFilename = (name: string): string => {
@@ -227,6 +320,10 @@ export default function ShowcasePage(): JSX.Element {
       items = storeData.flows;
     } else if (activeTab === "components") {
       items = storeData.components;
+    } else if (activeTab === "favorites") {
+      // Show only favorited items
+      const allItems = [...storeData.flows, ...storeData.components];
+      items = allItems.filter(item => favorites.has(item.id));
     }
 
     // Apply search filter
@@ -318,8 +415,8 @@ export default function ShowcasePage(): JSX.Element {
 
   return (
     <div className="flex h-screen flex-col">
-      {/* Header */}
-      <div className="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+      {/* Professional Header */}
+      <div className="border-b bg-white">
         <div className="w-full px-6 py-6">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-6">
@@ -327,37 +424,34 @@ export default function ShowcasePage(): JSX.Element {
                 variant="ghost"
                 size="sm"
                 onClick={() => navigate("/flow")}
-                className="flex items-center gap-2 hover:bg-muted/50 transition-colors"
+                className="flex items-center gap-2 hover:bg-gray-100 transition-colors text-gray-600"
               >
                 <IconComponent name="ArrowLeft" className="h-4 w-4" />
                 Back to Flow
               </Button>
               <div className="space-y-1">
-                <div className="flex items-center gap-3">
-                  <IconComponent name="Library" className="h-8 w-8 text-primary" />
-                  <h1 className="text-3xl font-bold bg-gradient-to-r from-primary to-primary/70 bg-clip-text text-transparent">
-                    Component & Flow Showcase
-                  </h1>
-                </div>
-                <p className="text-muted-foreground text-lg">
-                  Discover and download from our collection of {storeData?.summary.total_items || 0} professional components and flows
+                <h1 className="text-2xl font-semibold text-gray-900 tracking-tight">
+                  Component & Flow Showcase
+                </h1>
+                <p className="text-gray-600 text-sm">
+                  Discover and integrate from our collection of {storeData?.summary.total_items || 0} professional components and flows
                 </p>
               </div>
             </div>
             <div className="flex items-center gap-3">
               <div className="text-right space-y-1">
                 <div className="flex items-center gap-2">
-                  <Badge variant="secondary" className="px-3 py-1">
+                  <Badge variant="outline" className="px-3 py-1 border-gray-200 text-gray-700">
                     <IconComponent name="ToyBrick" className="h-3 w-3 mr-1" />
                     {storeData?.summary.total_components || 0} Components
                   </Badge>
-                  <Badge variant="secondary" className="px-3 py-1">
+                  <Badge variant="outline" className="px-3 py-1 border-gray-200 text-gray-700">
                     <IconComponent name="Group" className="h-3 w-3 mr-1" />
                     {storeData?.summary.total_flows || 0} Flows
                   </Badge>
                 </div>
-                <p className="text-xs text-muted-foreground">
-                  Updated {storeData?.summary.downloaded_at ? new Date(storeData.summary.downloaded_at).toLocaleDateString() : 'recently'}
+                <p className="text-xs text-gray-500">
+                  Updated recently
                 </p>
               </div>
             </div>
@@ -365,24 +459,24 @@ export default function ShowcasePage(): JSX.Element {
         </div>
       </div>
 
-      {/* Enhanced Filters */}
-      <div className="border-b bg-muted/30 backdrop-blur">
-        <div className="w-full px-6 py-4 space-y-4">
+      {/* Professional Filters */}
+      <div className="border-b bg-gray-50">
+        <div className="w-full px-6 py-4">
           <div className="flex flex-wrap items-center gap-4">
             <div className="relative flex-1 min-w-[300px] max-w-md">
-              <IconComponent name="Search" className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+              <IconComponent name="Search" className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
               <Input
                 placeholder="Search components and flows..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="pl-10 bg-background/50 border-muted-foreground/20 focus:border-primary transition-colors"
+                className="pl-10 bg-white border-gray-200 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-colors"
               />
               {searchTerm && (
                 <Button
                   variant="ghost"
                   size="sm"
                   onClick={() => setSearchTerm("")}
-                  className="absolute right-2 top-1/2 transform -translate-y-1/2 h-6 w-6 p-0 hover:bg-muted"
+                  className="absolute right-2 top-1/2 transform -translate-y-1/2 h-6 w-6 p-0 hover:bg-gray-100"
                 >
                   <IconComponent name="X" className="h-3 w-3" />
                 </Button>
@@ -390,115 +484,74 @@ export default function ShowcasePage(): JSX.Element {
             </div>
 
             <div className="relative min-w-[200px]">
-              <IconComponent name="User" className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+              <IconComponent name="User" className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
               <Input
                 placeholder="Filter by author..."
                 value={authorFilter}
                 onChange={(e) => setAuthorFilter(e.target.value)}
-                className="pl-10 bg-background/50 border-muted-foreground/20 focus:border-primary transition-colors"
+                className="pl-10 bg-white border-gray-200 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-colors"
               />
             </div>
 
             <Select value={sortBy} onValueChange={setSortBy}>
-              <SelectTrigger className="w-44 bg-background/50 border-muted-foreground/20">
-                <IconComponent name="ArrowUpDown" className="h-4 w-4 mr-2" />
+              <SelectTrigger className="w-44 bg-white border-gray-200">
+                <IconComponent name="ArrowUpDown" className="h-4 w-4 mr-2 text-gray-400" />
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="popular">
-                  <div className="flex items-center gap-2">
-                    <IconComponent name="TrendingUp" className="h-4 w-4" />
-                    Popular
-                  </div>
-                </SelectItem>
-                <SelectItem value="recent">
-                  <div className="flex items-center gap-2">
-                    <IconComponent name="Clock" className="h-4 w-4" />
-                    Recent
-                  </div>
-                </SelectItem>
-                <SelectItem value="alphabetical">
-                  <div className="flex items-center gap-2">
-                    <IconComponent name="SortAsc" className="h-4 w-4" />
-                    Alphabetical
-                  </div>
-                </SelectItem>
-                <SelectItem value="downloads">
-                  <div className="flex items-center gap-2">
-                    <IconComponent name="Download" className="h-4 w-4" />
-                    Downloads
-                  </div>
-                </SelectItem>
-                <SelectItem value="likes">
-                  <div className="flex items-center gap-2">
-                    <IconComponent name="Heart" className="h-4 w-4" />
-                    Likes
-                  </div>
-                </SelectItem>
+                <SelectItem value="popular">Popular</SelectItem>
+                <SelectItem value="recent">Recent</SelectItem>
+                <SelectItem value="alphabetical">Alphabetical</SelectItem>
+                <SelectItem value="downloads">Downloads</SelectItem>
+                <SelectItem value="likes">Likes</SelectItem>
               </SelectContent>
             </Select>
 
-            <div className="flex items-center space-x-2 bg-background/50 rounded-md px-3 py-2 border border-muted-foreground/20">
-              <Checkbox
-                id="private-only"
-                checked={showPrivateOnly}
-                onCheckedChange={setShowPrivateOnly}
+            <Select value={typeFilter} onValueChange={setTypeFilter}>
+              <SelectTrigger className="w-36 bg-white border-gray-200">
+                <IconComponent name="Filter" className="h-4 w-4 mr-2 text-gray-400" />
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All Types</SelectItem>
+                <SelectItem value="FLOW">Flows</SelectItem>
+                <SelectItem value="COMPONENT">Components</SelectItem>
+              </SelectContent>
+            </Select>
+
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setShowFavoritesOnly(!showFavoritesOnly)}
+              className={cn(
+                "transition-all duration-200 border-gray-200",
+                showFavoritesOnly
+                  ? "bg-blue-50 border-blue-200 text-blue-700 hover:bg-blue-100"
+                  : "hover:bg-gray-50 hover:border-gray-300 text-gray-700"
+              )}
+            >
+              <IconComponent
+                name="Heart"
+                className={cn("mr-2 h-4 w-4", showFavoritesOnly ? "fill-current" : "")}
               />
-              <Label htmlFor="private-only" className="text-sm cursor-pointer">
-                <IconComponent name="Lock" className="h-3 w-3 inline mr-1" />
-                Private only
-              </Label>
-            </div>
+              {showFavoritesOnly ? "Show All" : "Favorites"}
+            </Button>
+
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setViewMode(viewMode === "grid" ? "list" : "grid")}
+              className="hover:bg-gray-50 hover:border-gray-300 border-gray-200 text-gray-700"
+            >
+              <IconComponent
+                name={viewMode === "grid" ? "List" : "Grid3X3"}
+                className="mr-2 h-4 w-4"
+              />
+              {viewMode === "grid" ? "List" : "Grid"}
+            </Button>
           </div>
 
-          {/* Tag Filters */}
-          {allTags.length > 0 && (
-            <div className="space-y-3 pt-2">
-              <div className="flex items-center justify-between">
-                <Label className="text-sm font-medium flex items-center gap-2">
-                  <IconComponent name="Tag" className="h-4 w-4" />
-                  Filter by tags ({selectedTags.length} selected)
-                </Label>
-                {selectedTags.length > 0 && (
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => setSelectedTags([])}
-                    className="text-xs h-6 px-2"
-                  >
-                    <IconComponent name="X" className="h-3 w-3 mr-1" />
-                    Clear
-                  </Button>
-                )}
-              </div>
-              <div className="flex flex-wrap gap-2 max-h-24 overflow-y-auto p-2 bg-background/30 rounded-md border border-muted-foreground/10">
-                {allTags.slice(0, 30).map((tag) => (
-                  <Badge
-                    key={tag}
-                    variant={selectedTags.includes(tag) ? "default" : "outline"}
-                    className="cursor-pointer text-xs hover:scale-105 transition-transform"
-                    onClick={() => {
-                      setSelectedTags(prev =>
-                        prev.includes(tag)
-                          ? prev.filter(t => t !== tag)
-                          : [...prev, tag]
-                      );
-                    }}
-                  >
-                    {tag}
-                    {selectedTags.includes(tag) && (
-                      <IconComponent name="Check" className="h-3 w-3 ml-1" />
-                    )}
-                  </Badge>
-                ))}
-                {allTags.length > 30 && (
-                  <Badge variant="outline" className="text-xs">
-                    +{allTags.length - 30} more
-                  </Badge>
-                )}
-              </div>
-            </div>
-          )}
+
         </div>
       </div>
 
@@ -510,6 +563,13 @@ export default function ShowcasePage(): JSX.Element {
               <TabsTrigger value="all">All ({filteredItems.length})</TabsTrigger>
               <TabsTrigger value="flows">Flows ({storeData?.flows.length || 0})</TabsTrigger>
               <TabsTrigger value="components">Components ({storeData?.components.length || 0})</TabsTrigger>
+              <TabsTrigger value="favorites" className="relative">
+                <IconComponent name="Heart" className="mr-2 h-4 w-4" />
+                Favorites ({favorites.size})
+                {favorites.size > 0 && (
+                  <div className="absolute -top-1 -right-1 h-2 w-2 bg-red-500 rounded-full" />
+                )}
+              </TabsTrigger>
             </TabsList>
           </div>
 
@@ -556,6 +616,11 @@ export default function ShowcasePage(): JSX.Element {
                     item={item}
                     onDownload={() => handleDownload(item)}
                     isDownloading={downloadingItems.has(item.id)}
+                    onToggleFavorite={toggleFavorite}
+                    isFavorite={favorites.has(item.id)}
+                    onPreview={openPreview}
+                    onGrab={grabFlow}
+                    isGrabbing={grabbingItems.has(item.id)}
                   />
                 ))}
               </div>
@@ -628,6 +693,20 @@ export default function ShowcasePage(): JSX.Element {
           </TabsContent>
         </Tabs>
       </div>
+
+      {/* Enhanced Flow Preview Dialog */}
+      <FlowPreviewDialog
+        item={previewItem}
+        isOpen={isPreviewOpen}
+        onClose={() => setIsPreviewOpen(false)}
+        onGrab={(item) => {
+          grabFlow(item);
+          setIsPreviewOpen(false);
+        }}
+        onToggleFavorite={toggleFavorite}
+        isFavorite={previewItem ? favorites.has(previewItem.id) : false}
+        isGrabbing={previewItem ? grabbingItems.has(previewItem.id) : false}
+      />
     </div>
   );
 }
@@ -636,26 +715,38 @@ interface ShowcaseCardProps {
   item: StoreItem;
   onDownload: () => void;
   isDownloading: boolean;
+  onToggleFavorite: (itemId: string) => void;
+  isFavorite: boolean;
+  onPreview: (item: StoreItem) => void;
+  onGrab: (item: StoreItem) => void;
+  isGrabbing: boolean;
 }
 
-function ShowcaseCard({ item, onDownload, isDownloading }: ShowcaseCardProps) {
+function ShowcaseCard({
+  item,
+  onDownload,
+  isDownloading,
+  onToggleFavorite,
+  isFavorite,
+  onPreview,
+  onGrab,
+  isGrabbing
+}: ShowcaseCardProps) {
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString();
   };
 
   return (
-    <Card className="group relative flex h-96 flex-col justify-between overflow-hidden hover:shadow-lg hover:shadow-primary/5 transition-all duration-300 hover:-translate-y-1 border-muted-foreground/20 hover:border-primary/30">
-      {/* Header with gradient background */}
-      <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-primary/50 to-primary/20" />
+    <Card className="group relative flex h-80 flex-col justify-between overflow-hidden hover:shadow-md transition-all duration-200 border-gray-200 hover:border-gray-300 bg-white">
 
       <CardHeader className="pb-3 space-y-3">
         <div className="flex items-start justify-between gap-2">
           <div className="flex items-center gap-2">
             <div className={cn(
-              "p-2 rounded-lg",
+              "p-1.5 rounded-md",
               item.type === "COMPONENT"
-                ? "bg-component-icon/10 text-component-icon"
-                : "bg-flow-icon/10 text-flow-icon"
+                ? "bg-blue-50 text-blue-600"
+                : "bg-green-50 text-green-600"
             )}>
               <IconComponent
                 name={item.type === "COMPONENT" ? "ToyBrick" : "Group"}
@@ -663,112 +754,112 @@ function ShowcaseCard({ item, onDownload, isDownloading }: ShowcaseCardProps) {
               />
             </div>
             <Badge
-              variant={item.type === "COMPONENT" ? "default" : "secondary"}
-              className="text-xs font-medium"
+              variant="outline"
+              className={cn(
+                "text-xs font-medium border",
+                item.type === "COMPONENT"
+                  ? "border-blue-200 text-blue-700 bg-blue-50"
+                  : "border-green-200 text-green-700 bg-green-50"
+              )}
             >
               {item.type}
             </Badge>
           </div>
-          <div className="flex items-center gap-1">
-            {item.technical?.private && (
-              <ShadTooltip content="Private component">
-                <IconComponent name="Lock" className="h-4 w-4 text-amber-500" />
-              </ShadTooltip>
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => onToggleFavorite(item.id)}
+            className={cn(
+              "h-8 w-8 p-0 transition-all duration-200",
+              isFavorite
+                ? "text-red-500 hover:text-red-600 hover:bg-red-50"
+                : "text-gray-400 hover:text-red-500 hover:bg-red-50"
             )}
-            {item.stats.likes > 10 && (
-              <ShadTooltip content="Popular component">
-                <IconComponent name="Star" className="h-4 w-4 text-yellow-500" />
-              </ShadTooltip>
-            )}
-          </div>
+          >
+            <IconComponent
+              name="Heart"
+              className={cn("h-4 w-4", isFavorite ? "fill-current" : "")}
+            />
+          </Button>
         </div>
 
         <div className="space-y-2">
-          <CardTitle className="text-lg leading-tight font-semibold">
-            <ShadTooltip content={item.name}>
-              <div className="truncate group-hover:text-primary transition-colors">
-                {item.name}
-              </div>
-            </ShadTooltip>
+          <CardTitle className="text-base leading-tight font-semibold text-gray-900">
+            <div className="truncate group-hover:text-blue-600 transition-colors">
+              {item.name}
+            </div>
           </CardTitle>
 
-          <CardDescription className="line-clamp-3 text-sm leading-relaxed">
+          <CardDescription className="line-clamp-2 text-sm leading-relaxed text-gray-600">
             {item.description}
           </CardDescription>
         </div>
       </CardHeader>
 
-      <CardContent className="flex-1 pb-3 space-y-4">
+      <CardContent className="flex-1 pb-3 space-y-3">
         {/* Stats Row */}
         <div className="flex items-center justify-between">
-          <div className="flex items-center gap-4 text-xs">
-            <ShadTooltip content={`${item.stats.downloads} downloads`}>
-              <div className="flex items-center gap-1 px-2 py-1 bg-muted/50 rounded-md">
-                <IconComponent name="Download" className="h-3 w-3 text-blue-500" />
-                <span className="font-medium">{item.stats.downloads}</span>
-              </div>
-            </ShadTooltip>
-            <ShadTooltip content={`${item.stats.likes} likes`}>
-              <div className="flex items-center gap-1 px-2 py-1 bg-muted/50 rounded-md">
-                <IconComponent name="Heart" className="h-3 w-3 text-red-500" />
-                <span className="font-medium">{item.stats.likes}</span>
-              </div>
-            </ShadTooltip>
-          </div>
-          <div className="text-xs text-muted-foreground">
-            {item.technical?.last_tested_version && (
-              <span className="px-2 py-1 bg-green-500/10 text-green-700 dark:text-green-400 rounded-md">
-                v{item.technical.last_tested_version}
-              </span>
-            )}
-          </div>
-        </div>
-
-        {/* Author & Date Info */}
-        <div className="space-y-1 text-xs text-muted-foreground">
-          <div className="flex items-center gap-1">
-            <IconComponent name="User" className="h-3 w-3" />
-            <span>by</span>
-            <span className="font-medium text-foreground">{item.author.username}</span>
-          </div>
-          <div className="flex items-center gap-1">
-            <IconComponent name="Calendar" className="h-3 w-3" />
-            <span>Updated {formatDate(item.dates.updated)}</span>
-          </div>
-        </div>
-
-        {/* Tags */}
-        {item.tags && Array.isArray(item.tags) && item.tags.length > 0 && (
-          <div className="space-y-1">
-            <div className="flex flex-wrap gap-1">
-              {item.tags.slice(0, 3).map((tag, index) =>
-                tag?.tags_id?.name ? (
-                  <Badge
-                    key={tag.tags_id.id || `tag-${index}`}
-                    variant="outline"
-                    className="text-xs px-2 py-0.5 hover:bg-primary/10 transition-colors"
-                  >
-                    {tag.tags_id.name}
-                  </Badge>
-                ) : null
-              )}
-              {item.tags.length > 3 && (
-                <ShadTooltip content={`${item.tags.length - 3} more tags: ${item.tags.slice(3).filter(t => t?.tags_id?.name).map(t => t.tags_id.name).join(', ')}`}>
-                  <Badge variant="outline" className="text-xs px-2 py-0.5">
-                    +{item.tags.length - 3}
-                  </Badge>
-                </ShadTooltip>
-              )}
+          <div className="flex items-center gap-3 text-xs">
+            <div className="flex items-center gap-1 text-gray-600">
+              <IconComponent name="Download" className="h-3 w-3" />
+              <span className="font-medium">{item.stats.downloads}</span>
+            </div>
+            <div className="flex items-center gap-1 text-gray-600">
+              <IconComponent name="Heart" className="h-3 w-3" />
+              <span className="font-medium">{item.stats.likes}</span>
             </div>
           </div>
-        )}
+        </div>
+
+        {/* Author Info */}
+        <div className="text-xs text-gray-500">
+          <div className="flex items-center gap-1">
+            <IconComponent name="User" className="h-3 w-3" />
+            <span>by {item.author.username}</span>
+          </div>
+        </div>
+
+
       </CardContent>
 
       <CardFooter className="pt-3 pb-4">
+        <div className="flex gap-2 w-full">
+          <Button
+            onClick={() => onPreview(item)}
+            variant="outline"
+            size="sm"
+            className="flex-1 hover:bg-gray-50 hover:border-gray-300 border-gray-200 text-gray-700"
+          >
+            <IconComponent name="Eye" className="mr-2 h-4 w-4" />
+            Preview
+          </Button>
+
+          <Button
+            onClick={() => onGrab(item)}
+            disabled={isGrabbing}
+            className="flex-1 bg-blue-600 hover:bg-blue-700 text-white transition-colors"
+            size="sm"
+          >
+            {isGrabbing ? (
+              <>
+                <IconComponent name="Loader2" className="mr-2 h-4 w-4 animate-spin" />
+                Adding...
+              </>
+            ) : (
+              <>
+                <IconComponent name="Plus" className="mr-2 h-4 w-4" />
+                Add to Flow
+              </>
+            )}
+          </Button>
+        </div>
+
+        {/* Download Button */}
         <Button
           onClick={onDownload}
           disabled={isDownloading}
-          className="w-full group/btn hover:shadow-md transition-all duration-200 bg-gradient-to-r from-primary to-primary/90 hover:from-primary/90 hover:to-primary"
+          variant="outline"
+          className="w-full group/btn hover:shadow-md transition-all duration-200 hover:bg-primary/5 hover:border-primary/30"
           size="sm"
         >
           {isDownloading ? (

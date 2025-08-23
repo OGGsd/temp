@@ -31,3 +31,5 @@ export function AppWrapperPage() {
     </div>
   );
 }
+
+export default AppWrapperPage;

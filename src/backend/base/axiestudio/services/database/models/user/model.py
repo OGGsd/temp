@@ -13,6 +13,7 @@ if TYPE_CHECKING:
     from axiestudio.services.database.models.flow.model import Flow
     from axiestudio.services.database.models.folder.model import Folder
     from axiestudio.services.database.models.variable.model import Variable
+    from axiestudio.services.database.models.user_favorite.model import UserFavorite
 
 
 class UserOptin(BaseModel):
@@ -75,6 +76,10 @@ class User(SQLModel, table=True):  # type: ignore[call-arg]
         sa_relationship_kwargs={"cascade": "delete"},
     )
     folders: list["Folder"] = Relationship(
+        back_populates="user",
+        sa_relationship_kwargs={"cascade": "delete"},
+    )
+    favorites: list["UserFavorite"] = Relationship(
         back_populates="user",
         sa_relationship_kwargs={"cascade": "delete"},
     )

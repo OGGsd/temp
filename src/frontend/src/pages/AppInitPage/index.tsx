@@ -58,3 +58,5 @@ export function AppInitPage() {
     </>
   );
 }
+
+export default AppInitPage;

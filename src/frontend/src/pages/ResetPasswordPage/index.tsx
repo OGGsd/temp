@@ -183,5 +183,5 @@ export default function ResetPasswordPage(): JSX.Element {
     );
   }
 
-  return null;
+  return <div></div>;
 }

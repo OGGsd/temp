@@ -185,8 +185,8 @@ export default function AxieStudioStorePage(): JSX.Element {
           data: itemData.data || itemData,
           is_component: false,
           updated_at: new Date().toISOString(),
-          folder_id: null,
-          user_id: null,
+          folder_id: undefined,
+          user_id: undefined,
           endpoint_name: null
         };
 

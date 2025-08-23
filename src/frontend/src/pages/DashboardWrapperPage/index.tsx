@@ -14,3 +14,5 @@ export function DashboardWrapperPage() {
     </div>
   );
 }
+
+export default DashboardWrapperPage;

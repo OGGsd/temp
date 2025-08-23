@@ -6,3 +6,5 @@ export function AppAuthenticatedPage() {
 
   return <Outlet />;
 }
+
+export default AppAuthenticatedPage;

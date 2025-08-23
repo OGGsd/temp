@@ -255,7 +255,7 @@ export default function FlowPreviewComponent({
               <Background color="#e5e7eb" gap={20} size={1} />
               <Controls showInteractive={false} />
               <MiniMap
-                nodeColor={(node) => node.style?.background || '#f3f4f6'}
+                nodeColor="#f3f4f6"
                 className="bg-white border border-gray-200"
               />
             </ReactFlow>

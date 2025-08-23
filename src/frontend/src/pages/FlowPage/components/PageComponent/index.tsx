@@ -1,6 +1,7 @@
 import {
   type Connection,
   type Edge,
+  type NodeChange,
   type OnNodeDrag,
   type OnSelectionChangeParams,
   ReactFlow,

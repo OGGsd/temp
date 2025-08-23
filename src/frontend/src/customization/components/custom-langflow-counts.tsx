@@ -1,7 +1,7 @@
 import {AxieStudioCounts } from "@/components/core/appHeaderComponent/components/axiestudio-counts";
 
-export function CustomAxie StudioCounts() {
+export function CustomAxieStudioCounts() {
   return <AxieStudioCounts />;
 }
 
-export default CustomAxie StudioCounts;
+export default CustomAxieStudioCounts;

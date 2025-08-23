@@ -7,6 +7,7 @@ from axiestudio.api.v1 import (
     chat_router,
     email_verification_router,
     endpoints_router,
+    favorites_router,
     files_router,
     flows_router,
     folders_router,
@@ -42,6 +43,7 @@ router_v1.include_router(users_router)
 router_v1.include_router(api_key_router)
 router_v1.include_router(login_router)
 router_v1.include_router(email_verification_router)
+router_v1.include_router(favorites_router)
 router_v1.include_router(variables_router)
 router_v1.include_router(files_router)
 router_v1.include_router(monitor_router)

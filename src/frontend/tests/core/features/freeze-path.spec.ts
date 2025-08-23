@@ -21,12 +21,12 @@ test(
 
     await awaitBootstrapTest(page);
 
-    const firstRunAxie Studio = await page
+    const firstRunAxieStudio = await page
       .getByTestId("empty-project-description")
       .count();
 
-    if (firstRunAxie Studio > 0) {
-      await addFlowToTestOnEmptyAxie Studio(page);
+    if (firstRunAxieStudio > 0) {
+      await addFlowToTestOnEmptyAxieStudio(page);
     }
 
     await page.getByTestId("side_nav_options_all-templates").click();

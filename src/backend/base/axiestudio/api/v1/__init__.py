@@ -3,6 +3,7 @@ from axiestudio.api.v1.axiestudio_store import router as axiestudio_store_router
 from axiestudio.api.v1.chat import router as chat_router
 from axiestudio.api.v1.email_verification import router as email_verification_router
 from axiestudio.api.v1.endpoints import router as endpoints_router
+from axiestudio.api.v1.favorites import router as favorites_router
 from axiestudio.api.v1.files import router as files_router
 from axiestudio.api.v1.flows import router as flows_router
 from axiestudio.api.v1.folders import router as folders_router
@@ -25,6 +26,7 @@ __all__ = [
     "chat_router",
     "email_verification_router",
     "endpoints_router",
+    "favorites_router",
     "files_router",
     "flows_router",
     "folders_router",

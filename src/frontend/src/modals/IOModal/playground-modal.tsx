@@ -1,4 +1,4 @@
-//import AxieStudioLogoColor from "@/assets/AxieStudioLogocolor.svg?react";
+import AxieStudioLogoColor from "@/assets/AxieStudioLogoColor.svg?react";
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import { v5 as uuidv5 } from "uuid";

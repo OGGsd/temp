@@ -20,7 +20,7 @@ export const awaitBootstrapTest = async (
     .getByTestId("new_project_btn_empty_page")
     .count();
   if (countEmptyButton > 0) {
-    await addFlowToTestOnEmptyAxie Studio(page);
+    await addFlowToTestOnEmptyAxieStudio(page);
   }
 
   await page.waitForSelector('[id="new-project-btn"]', {
