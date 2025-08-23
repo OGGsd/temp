@@ -66,7 +66,7 @@ on:
 
 env:
   PYTHON_VERSION: "3.13"
-  TEST_TAG: "axiestudio/axiestudiov1:test"
+  TEST_TAG: "axiestudio:test"
 
 jobs:
   get-version:
@@ -230,6 +230,14 @@ jobs:
         with:
           ref: ${{ inputs.ref || inputs.main_version || github.ref }}
           persist-credentials: true
+
+      - name: Check initial disk space
+        run: |
+          echo "=== Initial Disk Space ==="
+          df -h
+          echo "=== Docker System Info ==="
+          sudo docker system df || true
+
       - name: "Setup Environment"
         uses: astral-sh/setup-uv@v6
         with:
@@ -245,6 +253,16 @@ jobs:
           else
             uv sync --no-dev --no-sources
           fi
+
+      - name: Free up disk space
+        run: |
+          sudo rm -rf /usr/share/dotnet
+          sudo rm -rf /opt/ghc
+          sudo rm -rf "/usr/local/share/boost"
+          sudo rm -rf "$AGENT_TOOLSDIRECTORY"
+          sudo docker system prune -af
+          sudo apt-get clean
+          df -h
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
@@ -272,6 +290,13 @@ jobs:
           platforms: linux/amd64,linux/arm64
           cache-from: type=registry,ref=axiestudio/axiestudiov1:buildcache
           cache-to: type=registry,ref=axiestudio/axiestudiov1:buildcache,mode=max
+
+      - name: Clean up after build
+        if: always()
+        run: |
+          sudo docker system prune -af
+          sudo rm -rf /tmp/*
+          df -h
 
 
 
