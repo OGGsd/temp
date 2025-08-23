@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import { useAuth } from '../../contexts/authContext';
+// import { useAuth } from '../../contexts/authContext';
 import { api } from '../../controllers/API/api';
 
 interface ChangePasswordPageProps {}
@@ -8,7 +8,7 @@ interface ChangePasswordPageProps {}
 const ChangePasswordPage: React.FC<ChangePasswordPageProps> = () => {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
-  const { user, login } = useAuth();
+  // const { login } = useAuth(); // Not needed for this page
   
   const [currentPassword, setCurrentPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');

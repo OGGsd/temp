@@ -3,7 +3,7 @@ from typing import Any
 from langchain.tools import StructuredTool
 from langchain_community.utilities.serpapi import SerpAPIWrapper
 from langchain_core.tools import ToolException
-from loguru import logger
+from axiestudio.logging.logger import logger
 from pydantic import BaseModel, Field
 
 from axiestudio.base.langchain_utilities.model import LCToolComponent

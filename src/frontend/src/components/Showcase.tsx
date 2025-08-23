@@ -226,7 +226,7 @@ const Showcase: React.FC = () => {
         </div>
       </footer>
 
-      <style jsx>{`
+      <style>{`
         .showcase-container {
           max-width: 1200px;
           margin: 0 auto;

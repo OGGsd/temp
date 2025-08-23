@@ -4,7 +4,7 @@ from pathlib import Path
 
 from aiofile import async_open
 from dotenv import dotenv_values
-from loguru import logger
+from axiestudio.logging.logger import logger
 
 from axiestudio.graph.graph.base import Graph
 from axiestudio.graph.schema import RunOutputs

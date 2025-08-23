@@ -9,7 +9,10 @@ export default function LogoIcon() {
           onError={(e) => {
             // Fallback to text logo if image fails to load
             e.currentTarget.style.display = 'none';
-            e.currentTarget.nextElementSibling.style.display = 'flex';
+            const nextElement = e.currentTarget.nextElementSibling as HTMLElement;
+            if (nextElement) {
+              nextElement.style.display = 'flex';
+            }
           }}
           style={{ maxWidth: '18px', maxHeight: '18px' }}
         />

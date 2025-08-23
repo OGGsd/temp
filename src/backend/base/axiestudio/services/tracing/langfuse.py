@@ -5,7 +5,7 @@ from collections import OrderedDict
 from datetime import datetime, timezone
 from typing import TYPE_CHECKING, Any
 
-from loguru import logger
+from axiestudio.logging.logger import logger
 from typing_extensions import override
 
 from axiestudio.serialization.serialization import serialize

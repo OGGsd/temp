@@ -1,4 +1,4 @@
-from loguru import logger
+from axiestudio.logging.logger import configure
 
 LOGGING_CONFIGURED = False
 
@@ -6,11 +6,11 @@ LOGGING_CONFIGURED = False
 def disable_logging() -> None:
     global LOGGING_CONFIGURED  # noqa: PLW0603
     if not LOGGING_CONFIGURED:
-        logger.disable("axiestudio")
+        configure(disable=True)
         LOGGING_CONFIGURED = True
 
 
 def enable_logging() -> None:
     global LOGGING_CONFIGURED  # noqa: PLW0603
-    logger.enable("axiestudio")
+    configure(disable=False)
     LOGGING_CONFIGURED = True

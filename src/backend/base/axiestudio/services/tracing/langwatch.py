@@ -4,7 +4,7 @@ import os
 from typing import TYPE_CHECKING, Any, cast
 
 import nanoid
-from loguru import logger
+from axiestudio.logging.logger import logger
 from typing_extensions import override
 
 from axiestudio.schema.data import Data
