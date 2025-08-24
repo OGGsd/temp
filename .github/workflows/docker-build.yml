@@ -231,12 +231,17 @@ jobs:
           ref: ${{ inputs.ref || inputs.main_version || github.ref }}
           persist-credentials: true
 
-      - name: Check initial disk space
+      - name: Check initial disk space and clean caches
         run: |
           echo "=== Initial Disk Space ==="
           df -h
           echo "=== Docker System Info ==="
           sudo docker system df || true
+          echo "=== Cleaning GitHub Actions cache ==="
+          sudo rm -rf /home/runner/actions-runner/cached/* || true
+          sudo rm -rf /home/runner/work/_temp/* || true
+          echo "=== After initial cleanup ==="
+          df -h
 
       - name: "Setup Environment"
         uses: astral-sh/setup-uv@v6
@@ -244,7 +249,7 @@ jobs:
           enable-cache: true
           cache-dependency-glob: "uv.lock"
           python-version: ${{ env.PYTHON_VERSION }}
-          prune-cache: false
+          prune-cache: true
       - name: Install the project
         run: |
           release_type="${{ inputs.release_type || needs.get-version.outputs.release_type }}"
@@ -254,14 +259,28 @@ jobs:
             uv sync --no-dev --no-sources
           fi
 
-      - name: Free up disk space
+      - name: Free up disk space and clean caches
         run: |
+          echo "=== Before cleanup ==="
+          df -h
+          echo "=== Cleaning system packages ==="
           sudo rm -rf /usr/share/dotnet
           sudo rm -rf /opt/ghc
           sudo rm -rf "/usr/local/share/boost"
           sudo rm -rf "$AGENT_TOOLSDIRECTORY"
-          sudo docker system prune -af
+          sudo rm -rf /usr/local/lib/android
+          sudo rm -rf /usr/share/swift
+          echo "=== Cleaning Docker ==="
+          sudo docker system prune -af --volumes
+          sudo docker builder prune -af
+          echo "=== Cleaning APT cache ==="
           sudo apt-get clean
+          sudo apt-get autoclean
+          sudo apt-get autoremove -y
+          echo "=== Cleaning temp files ==="
+          sudo rm -rf /tmp/*
+          sudo rm -rf /var/tmp/*
+          echo "=== After cleanup ==="
           df -h
 
       - name: Set up Docker Buildx
@@ -288,14 +307,20 @@ jobs:
           file: ${{ needs.setup.outputs.file }}
           tags: ${{ needs.setup.outputs.docker_tags }}
           platforms: linux/amd64,linux/arm64
-          cache-from: type=registry,ref=axiestudio/axiestudiov1:buildcache
-          cache-to: type=registry,ref=axiestudio/axiestudiov1:buildcache,mode=max
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
 
       - name: Clean up after build
         if: always()
         run: |
-          sudo docker system prune -af
+          echo "=== Final cleanup ==="
+          sudo docker system prune -af --volumes
+          sudo docker builder prune -af
           sudo rm -rf /tmp/*
+          sudo rm -rf /var/tmp/*
+          # Clean GitHub Actions cache if it exists
+          sudo rm -rf /home/runner/actions-runner/cached/* || true
+          echo "=== Final disk space ==="
           df -h
 
 
@@ -376,7 +401,7 @@ jobs:
           enable-cache: true
           cache-dependency-glob: "uv.lock"
           python-version: ${{ matrix.python-version }}
-          prune-cache: false
+          prune-cache: true
 
       - name: Restart HuggingFace Spaces Build
         run: |
