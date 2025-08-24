@@ -508,6 +508,8 @@ class DatabaseService(Service):
 
             # Define enhanced security columns to add with proper conditional logic
             enhanced_security_columns = {
+                # CRITICAL: Add email column first (required by User model)
+                "email": "VARCHAR",
                 # Email verification fields (legacy token-based)
                 "email_verified": "BOOLEAN DEFAULT FALSE",
                 "email_verification_token": "VARCHAR",
