@@ -121,7 +121,7 @@ jobs:
           make publish base=true
       - name: Upload Artifact
         if: steps.check-version.outputs.skipped == 'false'
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: dist-base
           path: src/backend/base/dist
@@ -200,7 +200,7 @@ jobs:
         run: |
           make publish main=true
       - name: Upload Artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: dist-main
           path: dist
